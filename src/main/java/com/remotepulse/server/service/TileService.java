@@ -6,12 +6,25 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+
+// The service sits between the controller and repository.
+
+// PC interface / Android
+//           ↓
+//       Controller
+//           ↓
+//        Service
+//           ↓
+//       Repository
+//           ↓
+//         MySQL
+
 @Service
 public class TileService{
 
-    private final TileRepository tileRepository;
+    private final TileRepository tileRepository;// every tile service object needds a tilerepository object to work
 
-    public TileService(TileRepository tileRepository){
+    public TileService(TileRepository tileRepository){ // This is constructor dependency injection ie using tileRepository object 
         this.tileRepository = tileRepository;
     }
 
