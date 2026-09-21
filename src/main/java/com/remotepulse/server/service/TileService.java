@@ -1,4 +1,4 @@
-package com.remotepulse.service;
+package com.remotepulse.server.service;
 
 import com.remotepulse.server.entity.Tile;
 import com.remotepulse.server.repository.TileRepository;

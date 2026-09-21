@@ -1,80 +1,76 @@
 package com.remotepulse.server.entity;
 
-import jakarta.persistence.*;;
+import jakarta.persistence.*;
 
-
-@Entity 
-@Table(name ="tiles")
+@Entity
+@Table(name = "tiles")
 public class Tile {
 
-    @Id 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "slot_number", nullable = false, unique = true)
     private Integer slotNumber;
 
+    @Column
     private String name;
 
+    @Column
     private String type;
 
     @Column(columnDefinition = "TEXT")
     private String target;
 
+    @Column
     private String icon;
 
-    public Tile(){
-
+    public Tile() {
     }
 
-    public Tile(Integer slotNumber){
-        this.slotNumber = slotNumber;
-
-    }
-
-    public Long getId(){
+    public Long getId() {
         return id;
     }
 
-    public Integer getSlotNumber(){
+    public Integer getSlotNumber() {
         return slotNumber;
     }
 
-    public void setSlotNumber(Integer slotNumber){
+    public void setSlotNumber(Integer slotNumber) {
         this.slotNumber = slotNumber;
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getType(){
+    public String getType() {
         return type;
     }
 
-    public void setType(String type){
+    public void setType(String type) {
         this.type = type;
     }
 
-    public String getTarget(){
+    public String getTarget() {
         return target;
     }
 
-    public void setTarget(String target){
+    public void setTarget(String target) {
         this.target = target;
     }
 
-    public String getIcon(){
+    public String getIcon() {
         return icon;
     }
 
-    public void setIcon(String icon){
+    public void setIcon(String icon) {
         this.icon = icon;
-    }  
+    }
 }
 
 // What we're representing
