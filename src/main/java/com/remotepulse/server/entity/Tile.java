@@ -2,7 +2,7 @@ package com.remotepulse.server.entity;
 
 import jakarta.persistence.*;
 
-@Entity
+@Entity // "This Tile class is connected to database data."
 @Table(name = "tiles")
 public class Tile {
 
@@ -11,7 +11,7 @@ public class Tile {
     private Long id;
 
     @Column(name = "slot_number", nullable = false, unique = true)
-    private Integer slotNumber;
+    private Integer slotNumber; // actual position of the tile 
 
     @Column
     private String name;
@@ -25,7 +25,7 @@ public class Tile {
     @Column
     private String icon;
 
-    public Tile() {
+    public Tile() { // Tile tile = new Tile()- java looks for a contructor that takes no arguments 
     }
 
     public Long getId() {

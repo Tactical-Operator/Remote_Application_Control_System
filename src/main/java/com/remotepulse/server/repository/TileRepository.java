@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+
+// database access layer- talks to the database 
 public interface TileRepository extends JpaRepository<Tile, Long>{
 
         Optional<Tile> findBySlotNumber(Integer slotNumber);
@@ -19,3 +21,9 @@ public interface TileRepository extends JpaRepository<Tile, Long>{
 // delete()
 
 // without writing any sql query
+
+// Java application
+//        ↓
+// TileRepository
+//        ↓
+// MySQL
