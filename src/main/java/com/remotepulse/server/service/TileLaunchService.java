@@ -25,6 +25,11 @@ public class TileLaunchService {
                 new ProcessBuilder(
                         "cmd", "/c", "start", "", tile.getTarget()
                 ).start();
+            } 
+            else{
+                throw new RuntimeException(
+                    "Unknown tile type: " + tile.getType()
+                );
             }
 
         } catch (Exception e) {
