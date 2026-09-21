@@ -25,6 +25,7 @@ public class TileService{
     private final TileRepository tileRepository;// every tile service object needds a tilerepository object to work
 
     public TileService(TileRepository tileRepository){ // This is constructor dependency injection ie using tileRepository object 
+
         this.tileRepository = tileRepository;
     }
 
@@ -38,5 +39,18 @@ public class TileService{
 
     public Tile saveTile(Tile tile){
         return tileRepository.save(tile);
+    }
+
+    public Tile updateTile(Long id, Tile updatedTile){
+
+        Tile existingTile= tileRepository.findById(id)
+        .orElseThrow(()-> new RuntimeException("Tile not found"));
+
+        existingTile.setName(updatedTile.getName());
+        existingTile.setType(updatedTile.getType());
+        existingTile.setTarget(updatedTile.getTarget());
+        existingTile.setIcon(updatedTile.getIcon());
+
+        return tileRepository.save(existingTile);
     }
 }
