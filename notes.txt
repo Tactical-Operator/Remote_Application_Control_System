@@ -1,0 +1,15 @@
+1. App Discovery
+       ↓
+2. Icon Service
+       ↓
+3. PC Configuration Frontend
+       ↓
+4. Connect Frontend → Backend
+       ↓
+5. Test complete configuration flow
+       ↓
+6. Android UI + icon synchronization
+       ↓
+7. Media controls
+       ↓
+8. Packaging / final polish
