@@ -12,30 +12,43 @@ public class TileLaunchService {
 
             if (tile.getType().equals("EXE")) {
 
-                new ProcessBuilder(tile.getTarget()).start();
+                new ProcessBuilder(
+                        tile.getTarget()
+                ).start();
 
             } else if (tile.getType().equals("WEBSITE")) {
 
                 new ProcessBuilder(
-                        "cmd", "/c", "start", "", tile.getTarget()
+                        "cmd",
+                        "/c",
+                        "start",
+                        "",
+                        tile.getTarget()
                 ).start();
 
-            } else if (tile.getType().equals("STORE_APP")) {
+            } else if (tile.getType().equals("INSTALLED_APP")) {
 
                 new ProcessBuilder(
-                        "cmd", "/c", "start", "", tile.getTarget()
+                        "cmd",
+                        "/c",
+                        "start",
+                        "",
+                        "shell:AppsFolder\\" + tile.getTarget()
                 ).start();
-            } 
-            else{
+
+            } else {
+
                 throw new RuntimeException(
-                    "Unknown tile type: " + tile.getType()
+                        "Unknown tile type: " + tile.getType()
                 );
             }
 
         } catch (Exception e) {
 
-            throw new RuntimeException("Failed to launch tile", e);
-
+            throw new RuntimeException(
+                    "Failed to launch tile",
+                    e
+            );
         }
     }
 }
