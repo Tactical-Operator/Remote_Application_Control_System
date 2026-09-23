@@ -10,7 +10,7 @@ public class TileLaunchService {
 
         try {
 
-            if (tile.getType().equals("EXE")) {
+            if (tile.getType().equals("CUSTOM_APP")) {
 
                 new ProcessBuilder(
                         tile.getTarget()
