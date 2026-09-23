@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Remote Pulse</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>Remote Pulse</h1>
+
+    <div id="tile-container"></div>
+
+
+    <!-- Configuration Popup -->
+
+    <div id="config-modal" class="modal hidden">
+
+        <div class="modal-content">
+
+            <h2>Configure Tile</h2>
+
+            <p id="selected-slot"></p>
+
+            <button id="installed-app-button">
+                Installed Application
+            </button>
+
+            <button id="custom-app-button">
+                Custom App
+            </button>
+
+            <button id="website-button">
+                Website
+            </button>
+
+            <button id="close-button" class="close-button">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Installed Application Popup -->
+
+    <div id="installed-app-modal" class="modal hidden">
+
+        <div class="modal-content installed-app-content">
+
+            <h2>Select Installed Application</h2>
+
+            <input
+                type="text"
+                id="app-search"
+                placeholder="Search applications..."
+                autocomplete="off"
+            >
+
+            <div id="installed-app-list"></div>
+
+            <button
+                id="installed-app-close-button"
+                class="close-button"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Custom Application Popup -->
+
+    <div id="custom-app-modal" class="modal hidden">
+
+        <div class="modal-content custom-app-content">
+
+            <h2>Custom Application</h2>
+
+            <p id="custom-app-slot"></p>
+
+
+            <label for="custom-app-path">
+                EXE Path
+            </label>
+
+            <input
+                type="text"
+                id="custom-app-path"
+                placeholder="Paste EXE path here..."
+                autocomplete="off"
+            >
+
+
+            <p id="custom-app-name">
+                Application: -
+            </p>
+
+
+            <button
+                id="custom-app-save-button"
+            >
+                Save
+            </button>
+
+
+            <button
+                id="custom-app-close-button"
+                class="close-button"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,277 @@
+body {
+    margin: 0;
+    padding: 30px;
+    background: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 30px;
+}
+
+#tile-container {
+    width: 600px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.tile {
+    aspect-ratio: 1 / 1;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tile:hover {
+    background: #333;
+}
+
+.tile-name {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+.empty-tile {
+    font-size: 40px;
+    color: #777;
+}
+
+
+/* =========================
+   Common Modal
+   ========================= */
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.7);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* =========================
+   Common Modal Content
+   ========================= */
+
+.modal-content {
+    width: 350px;
+
+    background: #222;
+
+    border: 1px solid #555;
+
+    border-radius: 15px;
+
+    padding: 30px;
+
+    box-sizing: border-box;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content p {
+    color: #aaa;
+}
+
+.modal-content button {
+    width: 100%;
+
+    padding: 12px;
+
+    margin-top: 12px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #333;
+
+    color: white;
+
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+.modal-content button:hover {
+    background: #444;
+}
+
+.modal-content .close-button {
+    margin-top: 25px;
+
+    background: #555;
+}
+
+.modal-content .close-button:hover {
+    background: #666;
+}
+
+
+/* =========================
+   Installed Applications
+   ========================= */
+
+.installed-app-content {
+    width: 450px;
+
+    max-height: 80vh;
+}
+
+#app-search {
+    width: 100%;
+
+    padding: 12px;
+
+    margin-top: 10px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #555;
+
+    border-radius: 8px;
+
+    background: #111;
+
+    color: white;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+#app-search:focus {
+    border-color: #777;
+}
+
+#installed-app-list {
+    margin-top: 15px;
+
+    max-height: 400px;
+
+    overflow-y: auto;
+
+    text-align: left;
+}
+
+.installed-app-item {
+    padding: 12px;
+
+    margin-bottom: 6px;
+
+    background: #333;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.installed-app-item:hover {
+    background: #444;
+}
+
+.installed-app-name {
+    font-size: 16px;
+}
+
+.no-apps {
+    padding: 20px;
+
+    color: #888;
+
+    text-align: center;
+}
+
+
+/* =========================
+   Custom Application
+   ========================= */
+
+.custom-app-content {
+    width: 450px;
+}
+
+.custom-app-content label {
+    display: block;
+
+    margin-top: 20px;
+
+    margin-bottom: 8px;
+
+    text-align: left;
+
+    color: #ccc;
+
+    font-size: 14px;
+}
+
+#custom-app-path {
+    width: 100%;
+
+    padding: 12px;
+
+    box-sizing: border-box;
+
+    border: 1px solid #555;
+
+    border-radius: 8px;
+
+    background: #111;
+
+    color: white;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+#custom-app-path:focus {
+    border-color: #777;
+}
+
+#custom-app-name {
+    margin-top: 15px;
+
+    text-align: left;
+
+    word-break: break-word;
+
+    color: #aaa;
+}
+
+
+/* Save button */
+
+#custom-app-save-button {
+    margin-top: 25px;
+
+    background: #333;
+}
+
+#custom-app-save-button:hover {
+    background: #444;
+}
