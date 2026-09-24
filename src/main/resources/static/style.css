@@ -1,70 +1,143 @@
+/* =========================
+   General Page
+   ========================= */
+
 body {
     margin: 0;
+
     padding: 30px;
+
     background: #111;
     color: white;
+
     font-family: Arial, sans-serif;
+
     text-align: center;
 }
+
+
+/* =========================
+   Heading
+   ========================= */
 
 h1 {
     margin-bottom: 30px;
 }
 
-#tile-container {
-    width: 600px;
-    margin: auto;
+
+/* =========================
+   Tile Container
+   ========================= */
+
+.tile-container {
+    width: 400px;
+
+    margin: 0 auto;
+
     display: grid;
+
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
 
-.tile {
-    aspect-ratio: 1 / 1;
-    background: #222;
-    border: 1px solid #444;
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.tile:hover {
-    background: #333;
-}
-
-.tile-name {
-    margin-top: 10px;
-    font-size: 18px;
-}
-
-.empty-tile {
-    font-size: 40px;
-    color: #777;
+    gap: 20px;
 }
 
 
 /* =========================
-   Common Modal
+   Tiles
+   ========================= */
+
+.tile {
+    aspect-ratio: 1/1;
+
+    border: 1px solid #333;
+
+    border-radius: 15px;
+
+    background: #1b1b1b;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.tile:hover {
+    background: #252525;
+
+    transform: scale(1.02);
+}
+
+
+/* =========================
+   Empty Tile
+   ========================= */
+
+.empty-tile {
+    font-size: 40px;
+
+    color: #777;
+}
+
+.empty-tile-label {
+    margin-top: 10px;
+
+    font-size: 14px;
+
+    color: #888;
+}
+
+
+/* =========================
+   Configured Tile
+   ========================= */
+
+.configured-tile-name {
+    font-size: 18px;
+
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+.configured-tile-type {
+    font-size: 13px;
+
+    color: #888;
+}
+
+
+/* =========================
+   Modal
    ========================= */
 
 .modal {
     position: fixed;
+
     top: 0;
     left: 0;
 
     width: 100%;
     height: 100%;
 
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
 
     display: flex;
+
     justify-content: center;
     align-items: center;
 }
+
+
+/* =========================
+   Hide Modal
+   ========================= */
 
 .hidden {
     display: none;
@@ -72,37 +145,44 @@ h1 {
 
 
 /* =========================
-   Common Modal Content
+   Modal Content
    ========================= */
 
 .modal-content {
-    width: 350px;
+    width: 400px;
 
-    background: #222;
-
-    border: 1px solid #555;
+    padding: 30px;
 
     border-radius: 15px;
 
-    padding: 30px;
+    background: #1c1c1c;
+
+    border: 1px solid #333;
 
     box-sizing: border-box;
 }
 
 .modal-content h2 {
     margin-top: 0;
+
+    margin-bottom: 20px;
 }
 
 .modal-content p {
     color: #aaa;
 }
 
+
+/* =========================
+   Configuration Buttons
+   ========================= */
+
 .modal-content button {
     width: 100%;
 
     padding: 12px;
 
-    margin-top: 12px;
+    margin-top: 10px;
 
     border: none;
 
@@ -112,7 +192,7 @@ h1 {
 
     color: white;
 
-    font-size: 16px;
+    font-size: 15px;
 
     cursor: pointer;
 }
@@ -121,37 +201,25 @@ h1 {
     background: #444;
 }
 
-.modal-content .close-button {
-    margin-top: 25px;
-
-    background: #555;
-}
-
-.modal-content .close-button:hover {
-    background: #666;
-}
-
 
 /* =========================
-   Installed Applications
+   Installed App Modal
    ========================= */
 
 .installed-app-content {
-    width: 450px;
-
-    max-height: 80vh;
+    width: 500px;
 }
 
-#app-search {
+#installed-app-search {
     width: 100%;
-
-    padding: 12px;
-
-    margin-top: 10px;
 
     box-sizing: border-box;
 
-    border: 1px solid #555;
+    padding: 12px;
+
+    margin-bottom: 15px;
+
+    border: 1px solid #444;
 
     border-radius: 8px;
 
@@ -159,19 +227,22 @@ h1 {
 
     color: white;
 
-    font-size: 16px;
+    font-size: 14px;
 
     outline: none;
 }
 
-#app-search:focus {
+#installed-app-search:focus {
     border-color: #777;
 }
 
-#installed-app-list {
-    margin-top: 15px;
 
-    max-height: 400px;
+/* =========================
+   Installed App List
+   ========================= */
+
+.installed-app-list {
+    max-height: 350px;
 
     overflow-y: auto;
 
@@ -181,50 +252,40 @@ h1 {
 .installed-app-item {
     padding: 12px;
 
-    margin-bottom: 6px;
-
-    background: #333;
+    margin-bottom: 8px;
 
     border-radius: 8px;
+
+    background: #252525;
 
     cursor: pointer;
 }
 
 .installed-app-item:hover {
-    background: #444;
+    background: #333;
 }
 
-.installed-app-name {
-    font-size: 16px;
-}
+.installed-app-item-name {
+    font-size: 14px;
 
-.no-apps {
-    padding: 20px;
-
-    color: #888;
-
-    text-align: center;
+    color: white;
 }
 
 
 /* =========================
-   Custom Application
+   Custom App
    ========================= */
 
 .custom-app-content {
-    width: 450px;
+    width: 420px;
 }
 
 .custom-app-content label {
     display: block;
 
-    margin-top: 20px;
-
     margin-bottom: 8px;
 
     text-align: left;
-
-    color: #ccc;
 
     font-size: 14px;
 }
@@ -232,11 +293,11 @@ h1 {
 #custom-app-path {
     width: 100%;
 
-    padding: 12px;
-
     box-sizing: border-box;
 
-    border: 1px solid #555;
+    padding: 12px;
+
+    border: 1px solid #444;
 
     border-radius: 8px;
 
@@ -244,7 +305,7 @@ h1 {
 
     color: white;
 
-    font-size: 15px;
+    font-size: 14px;
 
     outline: none;
 }
@@ -256,22 +317,95 @@ h1 {
 #custom-app-name {
     margin-top: 15px;
 
+    margin-bottom: 20px;
+
     text-align: left;
 
-    word-break: break-word;
+    font-size: 14px;
 
     color: #aaa;
 }
 
-
-/* Save button */
-
 #custom-app-save-button {
-    margin-top: 25px;
-
-    background: #333;
+    background: #2d7d46 !important;
 }
 
 #custom-app-save-button:hover {
-    background: #444;
+    background: #369653 !important;
+}
+
+
+/* =========================
+   Website
+   ========================= */
+
+.website-content {
+    width: 420px;
+}
+
+.website-content label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    text-align: left;
+
+    font-size: 14px;
+}
+
+#website-url {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    border: 1px solid #444;
+
+    border-radius: 8px;
+
+    background: #111;
+
+    color: white;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+#website-url:focus {
+    border-color: #777;
+}
+
+#website-name {
+    margin-top: 15px;
+
+    margin-bottom: 20px;
+
+    text-align: left;
+
+    font-size: 14px;
+
+    color: #aaa;
+}
+
+#website-save-button {
+    background: #2d7d46 !important;
+}
+
+#website-save-button:hover {
+    background: #369653 !important;
+}
+
+/* =========================
+   Server Address
+   ========================= */
+
+#server-address {
+    margin-top: -20px;
+    margin-bottom: 30px;
+
+    color: #2bff00;
+
+    font-size: 20px;
 }

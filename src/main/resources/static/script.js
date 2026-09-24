@@ -1,14 +1,72 @@
+/* =========================================================
+   Global Variables
+   ========================================================= */
+
 /*
  * Stores the slot currently being configured.
+ *
+ * Example:
+ *
+ * Click Slot 5
+ * selectedSlot = 5
  */
 let selectedSlot = null;
 
 
 /*
- * Stores all installed applications.
+ * Stores all installed applications retrieved
+ * from the Windows computer.
  */
 let installedApps = [];
 
+/* =========================================================
+   Server Information
+   ========================================================= */
+
+/*
+ * Get the Windows server IP address and port
+ * from Spring Boot.
+ */
+async function loadServerInfo() {
+
+    try {
+
+        const response =
+            await fetch("/api/server-info");
+
+        const serverInfo =
+            await response.json();
+
+        const serverAddress =
+            document.getElementById(
+                "server-address"
+            );
+
+        serverAddress.textContent =
+            "Server - " + serverInfo.address;
+
+    } catch (error) {
+
+        console.error(
+            "Failed to load server information:",
+            error
+        );
+
+        const serverAddress =
+            document.getElementById(
+                "server-address"
+            );
+
+        serverAddress.textContent =
+            "Server - Unavailable";
+    }
+}
+
+
+
+/* =========================================================
+   Load Tiles
+   ========================================================= */
 
 /*
  * Load all tiles from the backend.
@@ -31,14 +89,23 @@ async function loadTiles() {
             "Failed to load tiles:",
             error
         );
-
     }
-
 }
 
 
+/* =========================================================
+   Display Tiles
+   ========================================================= */
+
 /*
- * Display all 8 tiles.
+ * Display all 8 physical slots.
+ *
+ * Important:
+ *
+ * Clicking a tile NEVER launches the application
+ * from this Windows configuration page.
+ *
+ * Clicking a tile always opens configuration.
  */
 function displayTiles(tiles) {
 
@@ -63,136 +130,141 @@ function displayTiles(tiles) {
 
 
         /*
-         * Check whether this slot is configured.
+         * Store slot number on the HTML element.
          */
-        const isConfigured =
-            tile &&
-            tile.name &&
-            tile.type &&
-            tile.target;
+        tileElement.dataset.slot =
+            slot;
 
 
-        if (isConfigured) {
-
-            tileElement.innerHTML = `
-                <div class="tile-name">
-                    ${tile.name}
-                </div>
-            `;
-
-        } else {
+        /*
+         * Empty tile
+         */
+        if (
+            !tile ||
+            !tile.name ||
+            !tile.type ||
+            !tile.target
+        ) {
 
             tileElement.innerHTML = `
+
                 <div class="empty-tile">
                     +
                 </div>
 
-                <div class="tile-name">
+                <div class="empty-tile-label">
                     Slot ${slot}
                 </div>
+
             `;
 
         }
 
 
         /*
-         * Clicking a tile always opens
-         * configuration.
+         * Configured tile
+         */
+        else {
+
+            tileElement.innerHTML = `
+
+                <div class="configured-tile-name">
+                    ${tile.name}
+                </div>
+
+                <div class="configured-tile-type">
+                    ${tile.type}
+                </div>
+
+            `;
+        }
+
+
+        /*
+         * Clicking any tile opens configuration.
          *
          * It does NOT launch the application.
          */
         tileElement.addEventListener(
             "click",
-            () => openConfiguration(slot)
+            function () {
+
+                openConfiguration(slot);
+
+            }
         );
 
 
         container.appendChild(tileElement);
-
     }
-
 }
 
 
+/* =========================================================
+   Configuration Modal
+   ========================================================= */
+
 /*
- * Open configuration popup.
+ * Open the main configuration popup.
  */
 function openConfiguration(slot) {
 
     selectedSlot = slot;
 
 
-    const modal =
+    const configModal =
         document.getElementById("config-modal");
 
-    const selectedSlotElement =
-        document.getElementById("selected-slot");
+
+    const configSlot =
+        document.getElementById("config-slot");
 
 
-    selectedSlotElement.textContent =
-        `Configuring Slot ${slot}`;
+    configSlot.textContent =
+        "Configuring Slot " + slot;
 
 
-    modal.classList.remove("hidden");
-
+    configModal.classList.remove("hidden");
 }
 
 
 /*
- * Close configuration popup.
+ * Close the main configuration popup.
  */
 function closeConfiguration() {
 
-    const modal =
+    const configModal =
         document.getElementById("config-modal");
 
-    modal.classList.add("hidden");
 
+    configModal.classList.add("hidden");
 }
 
 
+/* =========================================================
+   Installed Applications
+   ========================================================= */
+
 /*
- * Open installed application popup.
+ * Open Installed Applications.
  */
 async function openInstalledApps() {
 
-    /*
-     * Make sure a tile was selected.
-     */
     if (selectedSlot === null) {
-
-        console.error(
-            "No tile selected."
-        );
-
         return;
-
     }
 
 
     try {
 
         /*
-         * Get installed applications.
+         * Get all installed applications
+         * from Windows.
          */
         const response =
-            await fetch(
-                "/api/installed-apps"
-            );
+            await fetch("/api/installed-apps");
 
 
-        if (!response.ok) {
-
-            throw new Error(
-                "Failed to load installed applications"
-            );
-
-        }
-
-
-        /*
-         * Store applications.
-         */
         installedApps =
             await response.json();
 
@@ -204,23 +276,26 @@ async function openInstalledApps() {
 
 
         /*
-         * Open installed application popup.
+         * Update slot number.
          */
-        const modal =
+        const installedAppSlot =
             document.getElementById(
-                "installed-app-modal"
+                "installed-app-slot"
             );
 
-        modal.classList.remove("hidden");
+
+        installedAppSlot.textContent =
+            "Configuring Slot " + selectedSlot;
 
 
         /*
-         * Clear previous search.
+         * Clear search box.
          */
         const searchInput =
             document.getElementById(
-                "app-search"
+                "installed-app-search"
             );
+
 
         searchInput.value = "";
 
@@ -234,7 +309,20 @@ async function openInstalledApps() {
 
 
         /*
-         * Focus search box.
+         * Show modal.
+         */
+        const modal =
+            document.getElementById(
+                "installed-app-modal"
+            );
+
+
+        modal.classList.remove("hidden");
+
+
+        /*
+         * Automatically place cursor
+         * inside search box.
          */
         searchInput.focus();
 
@@ -246,8 +334,10 @@ async function openInstalledApps() {
             error
         );
 
+        alert(
+            "Failed to load installed applications."
+        );
     }
-
 }
 
 
@@ -266,25 +356,30 @@ function displayInstalledApps(apps) {
 
 
     /*
-     * No applications found.
+     * No results.
      */
     if (apps.length === 0) {
 
         list.innerHTML = `
-            <div class="no-apps">
-                No applications found.
+
+            <div class="installed-app-item">
+
+                <div class="installed-app-item-name">
+                    No applications found.
+                </div>
+
             </div>
+
         `;
 
         return;
-
     }
 
 
     /*
-     * Create an item for every application.
+     * Create one item for every application.
      */
-    apps.forEach(app => {
+    apps.forEach(function (app) {
 
         const item =
             document.createElement("div");
@@ -296,9 +391,11 @@ function displayInstalledApps(apps) {
 
 
         item.innerHTML = `
-            <div class="installed-app-name">
+
+            <div class="installed-app-item-name">
                 ${app.name}
             </div>
+
         `;
 
 
@@ -307,108 +404,93 @@ function displayInstalledApps(apps) {
          */
         item.addEventListener(
             "click",
-            () => selectInstalledApp(app)
+            function () {
+
+                selectInstalledApp(app);
+
+            }
         );
 
 
         list.appendChild(item);
-
     });
-
 }
 
 
 /*
- * Search installed applications.
+ * Search installed applications locally.
  *
- * Search happens locally.
+ * The backend is NOT contacted for every
+ * character typed.
+ *
+ * We already downloaded the full list.
  */
 function searchInstalledApps() {
 
     const searchInput =
         document.getElementById(
-            "app-search"
+            "installed-app-search"
         );
 
 
     const searchText =
         searchInput.value
-            .trim()
-            .toLowerCase();
+            .toLowerCase()
+            .trim();
 
 
-    /*
-     * Empty search:
-     * show everything.
-     */
-    if (searchText === "") {
-
-        displayInstalledApps(
-            installedApps
-        );
-
-        return;
-
-    }
-
-
-    /*
-     * Filter locally.
-     */
     const filteredApps =
-        installedApps.filter(app =>
-            app.name
-                .toLowerCase()
-                .includes(searchText)
+        installedApps.filter(
+            function (app) {
+
+                return app.name
+                    .toLowerCase()
+                    .includes(searchText);
+
+            }
         );
 
 
     displayInstalledApps(
         filteredApps
     );
-
 }
 
 
 /*
- * Select installed application.
+ * Save selected installed application.
  */
 async function selectInstalledApp(app) {
 
-    /*
-     * Make sure a tile was selected.
-     */
     if (selectedSlot === null) {
-
-        console.error(
-            "No tile selected."
-        );
-
         return;
-
     }
 
 
     try {
 
-        /*
-         * Send selected application
-         * to Spring Boot.
-         */
         const response =
             await fetch(
                 "/api/installed-apps/select",
                 {
+
                     method: "POST",
 
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type":
+                            "application/json"
                     },
 
                     body: JSON.stringify({
-                        slotNumber: selectedSlot,
-                        name: app.name,
-                        appId: app.appId
+
+                        slotNumber:
+                            selectedSlot,
+
+                        name:
+                            app.name,
+
+                        appId:
+                            app.appId
                     })
                 }
             );
@@ -416,34 +498,21 @@ async function selectInstalledApp(app) {
 
         if (!response.ok) {
 
-            throw new Error(
-                "Failed to save installed application"
-            );
+            const errorText =
+                await response.text();
 
+            throw new Error(errorText);
         }
 
 
         /*
-         * Get updated tile.
-         */
-        const updatedTile =
-            await response.json();
-
-
-        console.log(
-            "Installed application selected:",
-            updatedTile
-        );
-
-
-        /*
-         * Close popup.
+         * Close installed app modal.
          */
         closeInstalledApps();
 
 
         /*
-         * Reload tiles.
+         * Reload tiles from database.
          */
         await loadTiles();
 
@@ -455,13 +524,15 @@ async function selectInstalledApp(app) {
             error
         );
 
+        alert(
+            "Failed to save installed application."
+        );
     }
-
 }
 
 
 /*
- * Close installed application popup.
+ * Close Installed Applications modal.
  */
 function closeInstalledApps() {
 
@@ -470,86 +541,75 @@ function closeInstalledApps() {
             "installed-app-modal"
         );
 
-    modal.classList.add("hidden");
 
+    modal.classList.add("hidden");
 }
 
 
-/*
- * =========================
- * Custom Application
- * =========================
- */
-
+/* =========================================================
+   Custom Application
+   ========================================================= */
 
 /*
- * Open Custom App popup.
+ * Open Custom Application configuration.
  */
 function openCustomApp() {
 
-    /*
-     * Make sure a tile was selected.
-     */
     if (selectedSlot === null) {
-
-        console.error(
-            "No tile selected."
-        );
-
         return;
-
     }
 
 
     /*
-     * Close configuration popup.
+     * Close main configuration popup.
      */
     closeConfiguration();
 
 
-    /*
-     * Show which slot is being configured.
-     */
-    const slotElement =
-        document.getElementById(
-            "custom-app-slot"
-        );
-
-    slotElement.textContent =
-        `Configuring Slot ${selectedSlot}`;
-
-
-    /*
-     * Clear previous path.
-     */
-    const pathInput =
-        document.getElementById(
-            "custom-app-path"
-        );
-
-    pathInput.value = "";
-
-
-    /*
-     * Reset application name.
-     */
-    const nameElement =
-        document.getElementById(
-            "custom-app-name"
-        );
-
-    nameElement.textContent =
-        "Application: -";
-
-
-    /*
-     * Open Custom App popup.
-     */
     const modal =
         document.getElementById(
             "custom-app-modal"
         );
 
+
+    const slotText =
+        document.getElementById(
+            "custom-app-slot"
+        );
+
+
+    const pathInput =
+        document.getElementById(
+            "custom-app-path"
+        );
+
+
+    const nameText =
+        document.getElementById(
+            "custom-app-name"
+        );
+
+
+    /*
+     * Show selected slot.
+     */
+    slotText.textContent =
+        "Configuring Slot " + selectedSlot;
+
+
+    /*
+     * Clear previous values.
+     */
+    pathInput.value = "";
+
+
+    nameText.textContent =
+        "Application: -";
+
+
+    /*
+     * Show modal.
+     */
     modal.classList.remove("hidden");
 
 
@@ -557,12 +617,11 @@ function openCustomApp() {
      * Focus path input.
      */
     pathInput.focus();
-
 }
 
 
 /*
- * Extract EXE filename from path.
+ * Extract EXE filename from a path.
  *
  * Example:
  *
@@ -575,43 +634,44 @@ function openCustomApp() {
 function getExeName(path) {
 
     /*
-     * Remove any trailing slash.
+     * Remove trailing slashes.
      */
-    const cleanedPath =
-        path.replace(/[\\/]+$/, "");
+    path =
+        path.replace(/[\\\/]+$/, "");
 
 
     /*
-     * Find the final slash.
+     * Find last Windows/Linux separator.
      */
     const lastBackslash =
-        cleanedPath.lastIndexOf("\\");
-
-    const lastForwardSlash =
-        cleanedPath.lastIndexOf("/");
+        path.lastIndexOf("\\");
 
 
     const lastSlash =
+        path.lastIndexOf("/");
+
+
+    const lastSeparator =
         Math.max(
             lastBackslash,
-            lastForwardSlash
+            lastSlash
         );
 
 
-    /*
-     * Return everything after
-     * the final slash.
-     */
-    return cleanedPath.substring(
-        lastSlash + 1
-    );
+    if (lastSeparator === -1) {
 
+        return path;
+    }
+
+
+    return path.substring(
+        lastSeparator + 1
+    );
 }
 
 
 /*
- * Update application name
- * while user types/pastes path.
+ * Update displayed EXE name while typing.
  */
 function updateCustomAppName() {
 
@@ -621,64 +681,44 @@ function updateCustomAppName() {
         );
 
 
-    const path =
-        pathInput.value.trim();
-
-
-    const nameElement =
+    const nameText =
         document.getElementById(
             "custom-app-name"
         );
 
 
-    /*
-     * Nothing entered.
-     */
+    const path =
+        pathInput.value.trim();
+
+
     if (path === "") {
 
-        nameElement.textContent =
+        nameText.textContent =
             "Application: -";
 
         return;
-
     }
 
 
-    /*
-     * Extract filename.
-     */
-    const fileName =
+    const name =
         getExeName(path);
 
 
-    nameElement.textContent =
-        `Application: ${fileName}`;
-
+    nameText.textContent =
+        "Application: " + name;
 }
 
 
 /*
- * Save Custom App.
+ * Save Custom Application.
  */
 async function saveCustomApp() {
 
-    /*
-     * Make sure a tile was selected.
-     */
     if (selectedSlot === null) {
-
-        console.error(
-            "No tile selected."
-        );
-
         return;
-
     }
 
 
-    /*
-     * Get path from input.
-     */
     const pathInput =
         document.getElementById(
             "custom-app-path"
@@ -690,7 +730,7 @@ async function saveCustomApp() {
 
 
     /*
-     * Make sure path exists.
+     * Check empty path.
      */
     if (path === "") {
 
@@ -699,34 +739,30 @@ async function saveCustomApp() {
         );
 
         return;
-
     }
 
 
     /*
-     * Make sure it ends with .exe.
+     * Check EXE extension.
      */
-    if (!path.toLowerCase().endsWith(".exe")) {
+    if (
+        !path
+            .toLowerCase()
+            .endsWith(".exe")
+    ) {
 
         alert(
-            "Please enter a valid .exe path."
+            "Only .exe files are allowed."
         );
 
         return;
-
     }
 
 
-    /*
-     * Extract filename.
-     */
     const name =
         getExeName(path);
 
 
-    /*
-     * Make sure we actually got a filename.
-     */
     if (name === "") {
 
         alert(
@@ -734,29 +770,33 @@ async function saveCustomApp() {
         );
 
         return;
-
     }
 
 
     try {
 
-        /*
-         * Send Custom App to Spring Boot.
-         */
         const response =
             await fetch(
                 "/api/custom-app/save",
                 {
+
                     method: "POST",
 
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type":
+                            "application/json"
                     },
 
                     body: JSON.stringify({
-                        slotNumber: selectedSlot,
-                        name: name,
-                        path: path
+
+                        slotNumber:
+                            selectedSlot,
+
+                        name:
+                            name,
+
+                        path:
+                            path
                     })
                 }
             );
@@ -764,28 +804,15 @@ async function saveCustomApp() {
 
         if (!response.ok) {
 
-            throw new Error(
-                "Failed to save custom application"
-            );
+            const errorText =
+                await response.text();
 
+            throw new Error(errorText);
         }
 
 
         /*
-         * Get updated tile.
-         */
-        const updatedTile =
-            await response.json();
-
-
-        console.log(
-            "Custom application saved:",
-            updatedTile
-        );
-
-
-        /*
-         * Close Custom App popup.
+         * Close modal.
          */
         closeCustomApp();
 
@@ -806,14 +833,12 @@ async function saveCustomApp() {
         alert(
             "Failed to save custom application."
         );
-
     }
-
 }
 
 
 /*
- * Close Custom App popup.
+ * Close Custom Application modal.
  */
 function closeCustomApp() {
 
@@ -822,16 +847,359 @@ function closeCustomApp() {
             "custom-app-modal"
         );
 
-    modal.classList.add("hidden");
 
+    modal.classList.add("hidden");
+}
+
+
+/* =========================================================
+   Website
+   ========================================================= */
+
+/*
+ * Open Website configuration.
+ */
+function openWebsite() {
+
+    if (selectedSlot === null) {
+        return;
+    }
+
+
+    /*
+     * Close main configuration popup.
+     */
+    closeConfiguration();
+
+
+    const modal =
+        document.getElementById(
+            "website-modal"
+        );
+
+
+    const slotText =
+        document.getElementById(
+            "website-slot"
+        );
+
+
+    const urlInput =
+        document.getElementById(
+            "website-url"
+        );
+
+
+    const nameText =
+        document.getElementById(
+            "website-name"
+        );
+
+
+    /*
+     * Display slot number.
+     */
+    slotText.textContent =
+        "Configuring Slot " + selectedSlot;
+
+
+    /*
+     * Clear previous values.
+     */
+    urlInput.value = "";
+
+
+    nameText.textContent =
+        "Website: -";
+
+
+    /*
+     * Show modal.
+     */
+    modal.classList.remove("hidden");
+
+
+    /*
+     * Focus URL field.
+     */
+    urlInput.focus();
 }
 
 
 /*
- * =========================
- * Event Listeners
- * =========================
+ * Extract a basic website name.
+ *
+ * Example:
+ *
+ * https://www.youtube.com/
+ *
+ * becomes:
+ *
+ * Youtube
  */
+function getWebsiteName(url) {
+
+    try {
+
+        const website =
+            new URL(url);
+
+
+        /*
+         * Get hostname.
+         *
+         * www.youtube.com
+         */
+        let hostname =
+            website.hostname;
+
+
+        /*
+         * Remove www.
+         *
+         * youtube.com
+         */
+        hostname =
+            hostname.replace(
+                /^www\./,
+                ""
+            );
+
+
+        /*
+         * Split:
+         *
+         * youtube.com
+         *
+         * into:
+         *
+         * ["youtube", "com"]
+         */
+        const parts =
+            hostname.split(".");
+
+
+        if (parts.length > 0) {
+
+            const mainName =
+                parts[0];
+
+
+            /*
+             * Capitalize first character.
+             */
+            return (
+                mainName
+                    .charAt(0)
+                    .toUpperCase()
+                +
+                mainName.slice(1)
+            );
+        }
+
+
+        return hostname;
+
+
+    } catch (error) {
+
+        return "";
+    }
+}
+
+
+/*
+ * Update website name while typing.
+ */
+function updateWebsiteName() {
+
+    const urlInput =
+        document.getElementById(
+            "website-url"
+        );
+
+
+    const nameText =
+        document.getElementById(
+            "website-name"
+        );
+
+
+    const url =
+        urlInput.value.trim();
+
+
+    if (url === "") {
+
+        nameText.textContent =
+            "Website: -";
+
+        return;
+    }
+
+
+    const name =
+        getWebsiteName(url);
+
+
+    if (name !== "") {
+
+        nameText.textContent =
+            "Website: " + name;
+
+    } else {
+
+        nameText.textContent =
+            "Website: -";
+    }
+}
+
+
+/*
+ * Save Website.
+ */
+async function saveWebsite() {
+
+    if (selectedSlot === null) {
+        return;
+    }
+
+
+    const urlInput =
+        document.getElementById(
+            "website-url"
+        );
+
+
+    const url =
+        urlInput.value.trim();
+
+
+    /*
+     * Check empty URL.
+     */
+    if (url === "") {
+
+        alert(
+            "Please enter a website URL."
+        );
+
+        return;
+    }
+
+
+    /*
+     * Only HTTP/HTTPS websites.
+     */
+    if (
+        !url.startsWith("http://") &&
+        !url.startsWith("https://")
+    ) {
+
+        alert(
+            "Website URL must start with http:// or https://"
+        );
+
+        return;
+    }
+
+
+    const name =
+        getWebsiteName(url);
+
+
+    if (name === "") {
+
+        alert(
+            "Could not determine website name."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/website/save",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        slotNumber:
+                            selectedSlot,
+
+                        name:
+                            name,
+
+                        url:
+                            url
+                    })
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            throw new Error(errorText);
+        }
+
+
+        /*
+         * Close website modal.
+         */
+        closeWebsite();
+
+
+        /*
+         * Reload tiles from database.
+         */
+        await loadTiles();
+
+
+    } catch (error) {
+
+        console.error(
+            "Failed to save website:",
+            error
+        );
+
+        alert(
+            "Failed to save website."
+        );
+    }
+}
+
+
+/*
+ * Close Website modal.
+ */
+function closeWebsite() {
+
+    const modal =
+        document.getElementById(
+            "website-modal"
+        );
+
+
+    modal.classList.add("hidden");
+}
+
+
+/* =========================================================
+   Event Listeners
+   ========================================================= */
 
 
 /*
@@ -846,7 +1214,7 @@ document
 
 
 /*
- * Custom App button.
+ * Custom Application button.
  */
 document
     .getElementById("custom-app-button")
@@ -857,10 +1225,21 @@ document
 
 
 /*
+ * Website button.
+ */
+document
+    .getElementById("website-button")
+    .addEventListener(
+        "click",
+        openWebsite
+    );
+
+
+/*
  * Configuration Cancel button.
  */
 document
-    .getElementById("close-button")
+    .getElementById("config-cancel-button")
     .addEventListener(
         "click",
         closeConfiguration
@@ -868,10 +1247,10 @@ document
 
 
 /*
- * Installed Application search.
+ * Installed App search.
  */
 document
-    .getElementById("app-search")
+    .getElementById("installed-app-search")
     .addEventListener(
         "input",
         searchInstalledApps
@@ -879,12 +1258,10 @@ document
 
 
 /*
- * Installed Application Cancel.
+ * Installed App Cancel.
  */
 document
-    .getElementById(
-        "installed-app-close-button"
-    )
+    .getElementById("installed-app-close-button")
     .addEventListener(
         "click",
         closeInstalledApps
@@ -894,8 +1271,8 @@ document
 /*
  * Custom App path input.
  *
- * Updates the displayed application
- * name while typing/pasting.
+ * Updates application name
+ * while user types.
  */
 document
     .getElementById("custom-app-path")
@@ -906,12 +1283,10 @@ document
 
 
 /*
- * Custom App Save button.
+ * Custom App Save.
  */
 document
-    .getElementById(
-        "custom-app-save-button"
-    )
+    .getElementById("custom-app-save-button")
     .addEventListener(
         "click",
         saveCustomApp
@@ -919,12 +1294,10 @@ document
 
 
 /*
- * Custom App Cancel button.
+ * Custom App Cancel.
  */
 document
-    .getElementById(
-        "custom-app-close-button"
-    )
+    .getElementById("custom-app-close-button")
     .addEventListener(
         "click",
         closeCustomApp
@@ -932,6 +1305,51 @@ document
 
 
 /*
- * Load tiles when page opens.
+ * Website URL input.
+ *
+ * Updates website name
+ * while user types.
+ */
+document
+    .getElementById("website-url")
+    .addEventListener(
+        "input",
+        updateWebsiteName
+    );
+
+
+/*
+ * Website Save.
+ */
+document
+    .getElementById("website-save-button")
+    .addEventListener(
+        "click",
+        saveWebsite
+    );
+
+
+/*
+ * Website Cancel.
+ */
+document
+    .getElementById("website-close-button")
+    .addEventListener(
+        "click",
+        closeWebsite
+    );
+
+
+/* =========================================================
+   Initial Load
+   ========================================================= */
+
+/*
+ * Load server information when page starts.
+ */
+loadServerInfo();
+
+/*
+ * Load tiles when page starts.
  */
 loadTiles();

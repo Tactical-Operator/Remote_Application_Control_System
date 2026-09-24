@@ -13,11 +13,22 @@
 <body>
 
     <h1>Remote Pulse</h1>
+    <p id="server-address">
+        Server - Loading...
+    </p>
 
-    <div id="tile-container"></div>
+    <!-- =========================
+         Main Tile Grid
+         ========================= -->
+
+    <div id="tile-container" class="tile-container">
+        <!-- Tiles are created by JavaScript -->
+    </div>
 
 
-    <!-- Configuration Popup -->
+    <!-- =========================
+         Configuration Modal
+         ========================= -->
 
     <div id="config-modal" class="modal hidden">
 
@@ -25,7 +36,7 @@
 
             <h2>Configure Tile</h2>
 
-            <p id="selected-slot"></p>
+            <p id="config-slot"></p>
 
             <button id="installed-app-button">
                 Installed Application
@@ -39,7 +50,7 @@
                 Website
             </button>
 
-            <button id="close-button" class="close-button">
+            <button id="config-cancel-button">
                 Cancel
             </button>
 
@@ -48,27 +59,24 @@
     </div>
 
 
-    <!-- Installed Application Popup -->
+    <!-- =========================
+         Installed Applications Modal
+         ========================= -->
 
     <div id="installed-app-modal" class="modal hidden">
 
         <div class="modal-content installed-app-content">
 
-            <h2>Select Installed Application</h2>
+            <h2>Installed Applications</h2>
 
-            <input
-                type="text"
-                id="app-search"
-                placeholder="Search applications..."
-                autocomplete="off"
-            >
+            <p id="installed-app-slot"></p>
 
-            <div id="installed-app-list"></div>
+            <input type="text" id="installed-app-search" placeholder="Search applications..." autocomplete="off">
 
-            <button
-                id="installed-app-close-button"
-                class="close-button"
-            >
+            <div id="installed-app-list" class="installed-app-list">
+            </div>
+
+            <button id="installed-app-close-button">
                 Cancel
             </button>
 
@@ -77,7 +85,9 @@
     </div>
 
 
-    <!-- Custom Application Popup -->
+    <!-- =========================
+         Custom App Modal
+         ========================= -->
 
     <div id="custom-app-modal" class="modal hidden">
 
@@ -87,35 +97,56 @@
 
             <p id="custom-app-slot"></p>
 
-
             <label for="custom-app-path">
                 EXE Path
             </label>
 
-            <input
-                type="text"
-                id="custom-app-path"
-                placeholder="Paste EXE path here..."
-                autocomplete="off"
-            >
-
+            <input type="text" id="custom-app-path" placeholder="Paste EXE path here..." autocomplete="off">
 
             <p id="custom-app-name">
                 Application: -
             </p>
 
-
-            <button
-                id="custom-app-save-button"
-            >
+            <button id="custom-app-save-button">
                 Save
             </button>
 
+            <button id="custom-app-close-button">
+                Cancel
+            </button>
 
-            <button
-                id="custom-app-close-button"
-                class="close-button"
-            >
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         Website Modal
+         ========================= -->
+
+    <div id="website-modal" class="modal hidden">
+
+        <div class="modal-content website-content">
+
+            <h2>Website Configuration</h2>
+
+            <p id="website-slot"></p>
+
+            <label for="website-url">
+                Website URL
+            </label>
+
+            <input type="text" id="website-url" placeholder="https://example.com" autocomplete="off">
+
+            <p id="website-name">
+                Website: -
+            </p>
+
+            <button id="website-save-button">
+                Save
+            </button>
+
+            <button id="website-close-button">
                 Cancel
             </button>
 
