@@ -13,8 +13,9 @@ public class TileLaunchService {
             if (tile.getType().equals("CUSTOM_APP")) {
 
                 new ProcessBuilder(
-                        tile.getTarget()
-                ).start();
+                        "wt.exe",
+                        "new-tab",
+                        tile.getTarget()).start();
 
             } else if (tile.getType().equals("WEBSITE")) {
 
@@ -23,8 +24,7 @@ public class TileLaunchService {
                         "/c",
                         "start",
                         "",
-                        tile.getTarget()
-                ).start();
+                        tile.getTarget()).start();
 
             } else if (tile.getType().equals("INSTALLED_APP")) {
 
@@ -33,22 +33,19 @@ public class TileLaunchService {
                         "/c",
                         "start",
                         "",
-                        "shell:AppsFolder\\" + tile.getTarget()
-                ).start();
+                        "shell:AppsFolder\\" + tile.getTarget()).start();
 
             } else {
 
                 throw new RuntimeException(
-                        "Unknown tile type: " + tile.getType()
-                );
+                        "Unknown tile type: " + tile.getType());
             }
 
         } catch (Exception e) {
 
             throw new RuntimeException(
                     "Failed to launch tile",
-                    e
-            );
+                    e);
         }
     }
 }
