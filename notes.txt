@@ -13,3 +13,42 @@
 7. Media controls
        ↓
 8. Packaging / final polish
+
+
+PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\Microsoft.VisualStudioCode"
+PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\Brave"
+PS C:\Users\Admin> Get-StartApps | Where-Object Name -eq "Whatsapp"
+
+Name     AppID
+----     -----
+WhatsApp 5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App
+
+
+PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\\5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App"
+The system cannot find the file shell:AppsFolder\\5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App.
+PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App"
+PS C:\Users\Admin>
+                   cmd /c start "" "shell:AppsFolder\5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App"
+PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App"
+PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\Brave"
+PS C:\Users\Admin>
+
+
+PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\Microsoft.BingWeather_8wekyb3d8bbwe!App"
+
+                   Get-StartApps | Where-Object Name -eq "App Name"
+
+PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\paste the AppId"
+
+
+
+
+
+
+
+
+
+
+
+
+
