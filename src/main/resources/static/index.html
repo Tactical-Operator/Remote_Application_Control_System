@@ -1,36 +1,54 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Remote Pulse</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 
 <body>
 
     <h1>Remote Pulse</h1>
+
     <p id="server-address">
         Server - Loading...
     </p>
 
-    <!-- =========================
-         Main Tile Grid
-         ========================= -->
 
-    <div id="tile-container" class="tile-container">
+    <!-- =====================================================
+         Main Tile Grid
+         ===================================================== -->
+
+    <div
+        id="tile-container"
+        class="tile-container"
+    >
         <!-- Tiles are created by JavaScript -->
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          Configuration Modal
-         ========================= -->
+         ===================================================== -->
 
-    <div id="config-modal" class="modal hidden">
+    <div
+        id="config-modal"
+        class="modal hidden"
+    >
 
         <div class="modal-content">
 
@@ -38,19 +56,35 @@
 
             <p id="config-slot"></p>
 
-            <button id="installed-app-button">
+
+            <button
+                type="button"
+                id="installed-app-button"
+            >
                 Installed Application
             </button>
 
-            <button id="custom-app-button">
+
+            <button
+                type="button"
+                id="custom-app-button"
+            >
                 Custom App
             </button>
 
-            <button id="website-button">
+
+            <button
+                type="button"
+                id="website-button"
+            >
                 Website
             </button>
 
-            <button id="config-cancel-button">
+
+            <button
+                type="button"
+                id="config-cancel-button"
+            >
                 Cancel
             </button>
 
@@ -59,24 +93,78 @@
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          Installed Applications Modal
-         ========================= -->
+         ===================================================== -->
 
-    <div id="installed-app-modal" class="modal hidden">
+    <div
+        id="installed-app-modal"
+        class="modal hidden"
+    >
 
         <div class="modal-content installed-app-content">
 
             <h2>Installed Applications</h2>
 
+
             <p id="installed-app-slot"></p>
 
-            <input type="text" id="installed-app-search" placeholder="Search applications..." autocomplete="off">
 
-            <div id="installed-app-list" class="installed-app-list">
+            <!-- Search -->
+
+            <input
+                type="text"
+                id="installed-app-search"
+                placeholder="Search applications..."
+                autocomplete="off"
+            >
+
+
+            <!-- Application List -->
+
+            <div
+                id="installed-app-list"
+                class="installed-app-list"
+            >
             </div>
 
-            <button id="installed-app-close-button">
+
+            <!-- Selected Application -->
+
+            <p id="installed-app-selected">
+                Selected: None
+            </p>
+
+
+            <!-- Custom Icon -->
+
+            <label for="installed-app-custom-icon">
+                Custom Icon
+            </label>
+
+            <input
+                type="file"
+                id="installed-app-custom-icon"
+                accept=".png,.jpg,.jpeg"
+            >
+
+
+            <!-- SAVE -->
+
+            <button
+                type="button"
+                id="installed-app-save-button"
+            >
+                Save
+            </button>
+
+
+            <!-- CANCEL -->
+
+            <button
+                type="button"
+                id="installed-app-close-button"
+            >
                 Cancel
             </button>
 
@@ -85,33 +173,69 @@
     </div>
 
 
-    <!-- =========================
-         Custom App Modal
-         ========================= -->
+    <!-- =====================================================
+         Custom Application Modal
+         ===================================================== -->
 
-    <div id="custom-app-modal" class="modal hidden">
+    <div
+        id="custom-app-modal"
+        class="modal hidden"
+    >
 
         <div class="modal-content custom-app-content">
 
             <h2>Custom Application</h2>
 
+
             <p id="custom-app-slot"></p>
+
 
             <label for="custom-app-path">
                 EXE Path
             </label>
 
-            <input type="text" id="custom-app-path" placeholder="Paste EXE path here..." autocomplete="off">
+            <input
+                type="text"
+                id="custom-app-path"
+                placeholder="Paste EXE path here..."
+                autocomplete="off"
+            >
+
 
             <p id="custom-app-name">
                 Application: -
             </p>
 
-            <button id="custom-app-save-button">
+
+            <!-- Custom Icon -->
+
+            <label for="custom-app-custom-icon">
+                Custom Icon
+            </label>
+
+            <input
+                type="file"
+                id="custom-app-custom-icon"
+                accept=".png,.jpg,.jpeg"
+            >
+
+
+            <!-- SAVE -->
+
+            <button
+                type="button"
+                id="custom-app-save-button"
+            >
                 Save
             </button>
 
-            <button id="custom-app-close-button">
+
+            <!-- CANCEL -->
+
+            <button
+                type="button"
+                id="custom-app-close-button"
+            >
                 Cancel
             </button>
 
@@ -120,33 +244,69 @@
     </div>
 
 
-    <!-- =========================
+    <!-- =====================================================
          Website Modal
-         ========================= -->
+         ===================================================== -->
 
-    <div id="website-modal" class="modal hidden">
+    <div
+        id="website-modal"
+        class="modal hidden"
+    >
 
         <div class="modal-content website-content">
 
             <h2>Website Configuration</h2>
 
+
             <p id="website-slot"></p>
+
 
             <label for="website-url">
                 Website URL
             </label>
 
-            <input type="text" id="website-url" placeholder="https://example.com" autocomplete="off">
+            <input
+                type="text"
+                id="website-url"
+                placeholder="https://example.com"
+                autocomplete="off"
+            >
+
 
             <p id="website-name">
                 Website: -
             </p>
 
-            <button id="website-save-button">
+
+            <!-- Custom Icon -->
+
+            <label for="website-custom-icon">
+                Custom Icon
+            </label>
+
+            <input
+                type="file"
+                id="website-custom-icon"
+                accept=".png,.jpg,.jpeg"
+            >
+
+
+            <!-- SAVE -->
+
+            <button
+                type="button"
+                id="website-save-button"
+            >
                 Save
             </button>
 
-            <button id="website-close-button">
+
+            <!-- CANCEL -->
+
+            <button
+                type="button"
+                id="website-close-button"
+            >
                 Cancel
             </button>
 
@@ -154,9 +314,14 @@
 
     </div>
 
+
+    <!-- =====================================================
+         JavaScript
+         ===================================================== -->
 
     <script src="script.js"></script>
 
 </body>
 
 </html>
+

@@ -1,411 +1,426 @@
 /* =========================
-   General Page
-   ========================= */
+General Page
+========================= */
 
 body {
-    margin: 0;
+margin: 0;
+padding: 20px;
 
-    padding: 30px;
+background: #111;
+color: white;
 
-    background: #111;
-    color: white;
+font-family: Arial, sans-serif;
 
-    font-family: Arial, sans-serif;
+text-align: center;
 
-    text-align: center;
 }
 
-
 /* =========================
-   Heading
-   ========================= */
+Heading
+========================= */
 
 h1 {
-    margin-bottom: 30px;
+margin: 0 0 4px 0;
+
+font-size: 26px;
+
+text-align: center;
+
 }
 
+/* =========================
+Server Address
+========================= */
+
+#server-address {
+margin: 0 0 18px 0;
+
+color: #2bff00;
+
+font-size: 14px;
+
+text-align: center;
+
+width: 100%;
+
+}
 
 /* =========================
-   Tile Container
-   ========================= */
+Tile Container
+========================= */
 
 .tile-container {
-    width: 400px;
+width: 280px;
 
-    margin: 0 auto;
+margin: 0 auto;
 
-    display: grid;
+display: grid;
 
-    grid-template-columns: repeat(2, 1fr);
+grid-template-columns: repeat(2, 1fr);
 
-    gap: 20px;
+gap: 12px;
+
 }
 
-
 /* =========================
-   Tiles
-   ========================= */
+Tiles
+========================= */
 
 .tile {
-    aspect-ratio: 1/1;
+width: 134px;
+height: 134px;
 
-    border: 1px solid #333;
+box-sizing: border-box;
 
-    border-radius: 15px;
+border: 2px solid #666;
 
-    background: #1b1b1b;
+border-radius: 10px;
 
-    display: flex;
+background: #000000;
 
-    flex-direction: column;
+display: flex;
 
-    justify-content: center;
+justify-content: center;
+align-items: center;
 
-    align-items: center;
+cursor: pointer;
 
-    cursor: pointer;
+overflow: hidden;
 
-    transition: 0.2s;
+transition: 0.2s;
+
 }
 
-.tile:hover {
-    background: #252525;
+.tile {
+background: #000000;
 
-    transform: scale(1.02);
+border-color: #888;
+
+transform: scale(1.02);
+
 }
-
 
 /* =========================
-   Empty Tile
-   ========================= */
+Configured Tile Icon
+========================= */
+
+.tile-icon {
+width: 88%;
+height: 88%;
+
+object-fit: contain;
+
+display: block;
+
+}
+
+/* =========================
+Empty Tile
+========================= */
 
 .empty-tile {
-    font-size: 40px;
+font-size: 32px;
 
-    color: #777;
+color: #777;
+
 }
 
 .empty-tile-label {
-    margin-top: 10px;
+margin-top: 6px;
 
-    font-size: 14px;
+font-size: 12px;
 
-    color: #888;
+color: #888;
+
 }
-
 
 /* =========================
-   Configured Tile
-   ========================= */
-
-.configured-tile-name {
-    font-size: 18px;
-
-    font-weight: bold;
-
-    margin-bottom: 8px;
-}
-
-.configured-tile-type {
-    font-size: 13px;
-
-    color: #888;
-}
-
-
-/* =========================
-   Modal
-   ========================= */
+Modal
+========================= */
 
 .modal {
-    position: fixed;
+position: fixed;
 
-    top: 0;
-    left: 0;
+top: 0;
+left: 0;
 
-    width: 100%;
-    height: 100%;
+width: 100%;
+height: 100%;
 
-    background: rgba(0, 0, 0, 0.75);
+background: rgba(0, 0, 0, 0.75);
 
-    display: flex;
+display: flex;
 
-    justify-content: center;
-    align-items: center;
+justify-content: center;
+align-items: center;
+
 }
 
-
 /* =========================
-   Hide Modal
-   ========================= */
+Hide Modal
+========================= */
 
 .hidden {
-    display: none;
+display: none;
 }
 
-
 /* =========================
-   Modal Content
-   ========================= */
+Modal Content
+========================= */
 
 .modal-content {
-    width: 400px;
+width: 400px;
 
-    padding: 30px;
+padding: 30px;
 
-    border-radius: 15px;
+border-radius: 15px;
 
-    background: #1c1c1c;
+background: #1c1c1c;
 
-    border: 1px solid #333;
+border: 1px solid #333;
 
-    box-sizing: border-box;
+box-sizing: border-box;
+
 }
 
 .modal-content h2 {
-    margin-top: 0;
+margin-top: 0;
 
-    margin-bottom: 20px;
+margin-bottom: 20px;
+
 }
 
 .modal-content p {
-    color: #aaa;
+color: #aaa;
 }
 
-
 /* =========================
-   Configuration Buttons
-   ========================= */
+Configuration Buttons
+========================= */
 
 .modal-content button {
-    width: 100%;
+width: 100%;
 
-    padding: 12px;
+padding: 12px;
 
-    margin-top: 10px;
+margin-top: 10px;
 
-    border: none;
+border: none;
 
-    border-radius: 8px;
+border-radius: 8px;
 
-    background: #333;
+background: #333;
 
-    color: white;
+color: white;
 
-    font-size: 15px;
+font-size: 15px;
 
-    cursor: pointer;
+cursor: pointer;
+
 }
 
-.modal-content button:hover {
-    background: #444;
+.modal-content button {
+background: #444;
 }
-
 
 /* =========================
-   Installed App Modal
-   ========================= */
+Installed App Modal
+========================= */
 
 .installed-app-content {
-    width: 500px;
+width: 500px;
 }
 
 #installed-app-search {
-    width: 100%;
+width: 100%;
 
-    box-sizing: border-box;
+box-sizing: border-box;
 
-    padding: 12px;
+padding: 12px;
 
-    margin-bottom: 15px;
+margin-bottom: 15px;
 
-    border: 1px solid #444;
+border: 1px solid #444;
 
-    border-radius: 8px;
+border-radius: 8px;
 
-    background: #111;
+background: #111;
 
-    color: white;
+color: white;
 
-    font-size: 14px;
+font-size: 14px;
 
-    outline: none;
+outline: none;
+
 }
 
-#installed-app-search:focus {
-    border-color: #777;
+#installed-app-search {
+border-color: #777;
 }
-
 
 /* =========================
-   Installed App List
-   ========================= */
+Installed App List
+========================= */
 
 .installed-app-list {
-    max-height: 350px;
+max-height: 350px;
 
-    overflow-y: auto;
+overflow-y: auto;
 
-    text-align: left;
+text-align: left;
+
 }
 
 .installed-app-item {
-    padding: 12px;
+padding: 12px;
 
-    margin-bottom: 8px;
+margin-bottom: 8px;
 
-    border-radius: 8px;
+border-radius: 8px;
 
-    background: #252525;
+background: #252525;
 
-    cursor: pointer;
+cursor: pointer;
+
 }
 
-.installed-app-item:hover {
-    background: #333;
+.installed-app-item {
+background: #333;
 }
 
 .installed-app-item-name {
-    font-size: 14px;
+font-size: 14px;
 
-    color: white;
+color: white;
+
 }
 
-
 /* =========================
-   Custom App
-   ========================= */
+Custom App
+========================= */
 
 .custom-app-content {
-    width: 420px;
+width: 420px;
 }
 
 .custom-app-content label {
-    display: block;
+display: block;
 
-    margin-bottom: 8px;
+margin-bottom: 8px;
 
-    text-align: left;
+text-align: left;
 
-    font-size: 14px;
+font-size: 14px;
+
 }
 
 #custom-app-path {
-    width: 100%;
+width: 100%;
 
-    box-sizing: border-box;
+box-sizing: border-box;
 
-    padding: 12px;
+padding: 12px;
 
-    border: 1px solid #444;
+border: 1px solid #444;
 
-    border-radius: 8px;
+border-radius: 8px;
 
-    background: #111;
+background: #111;
 
-    color: white;
+color: white;
 
-    font-size: 14px;
+font-size: 14px;
 
-    outline: none;
+outline: none;
+
 }
 
-#custom-app-path:focus {
-    border-color: #777;
+#custom-app-path {
+border-color: #777;
 }
 
 #custom-app-name {
-    margin-top: 15px;
+margin-top: 15px;
 
-    margin-bottom: 20px;
+margin-bottom: 20px;
 
-    text-align: left;
+text-align: left;
 
-    font-size: 14px;
+font-size: 14px;
 
-    color: #aaa;
+color: #aaa;
+
 }
 
 #custom-app-save-button {
-    background: #2d7d46 !important;
+background: #2d7d46 !important;
 }
 
-#custom-app-save-button:hover {
-    background: #369653 !important;
+#custom-app-save-button {
+background: #369653 !important;
 }
-
 
 /* =========================
-   Website
-   ========================= */
+Website
+========================= */
 
 .website-content {
-    width: 420px;
+width: 420px;
 }
 
 .website-content label {
-    display: block;
+display: block;
 
-    margin-bottom: 8px;
+margin-bottom: 8px;
 
-    text-align: left;
+text-align: left;
 
-    font-size: 14px;
+font-size: 14px;
+
 }
 
 #website-url {
-    width: 100%;
+width: 100%;
 
-    box-sizing: border-box;
+box-sizing: border-box;
 
-    padding: 12px;
+padding: 12px;
 
-    border: 1px solid #444;
+border: 1px solid #444;
 
-    border-radius: 8px;
+border-radius: 8px;
 
-    background: #111;
+background: #111;
 
-    color: white;
+color: white;
 
-    font-size: 14px;
+font-size: 14px;
 
-    outline: none;
+outline: none;
+
 }
 
-#website-url:focus {
-    border-color: #777;
+#website-url {
+border-color: #777;
 }
 
 #website-name {
-    margin-top: 15px;
+margin-top: 15px;
 
-    margin-bottom: 20px;
+margin-bottom: 20px;
 
-    text-align: left;
+text-align: left;
 
-    font-size: 14px;
+font-size: 14px;
 
-    color: #aaa;
+color: #aaa;
+
 }
 
 #website-save-button {
-    background: #2d7d46 !important;
+background: #2d7d46 !important;
 }
 
-#website-save-button:hover {
-    background: #369653 !important;
-}
-
-/* =========================
-   Server Address
-   ========================= */
-
-#server-address {
-    margin-top: -20px;
-    margin-bottom: 30px;
-
-    color: #2bff00;
-
-    font-size: 20px;
+#website-save-button {
+background: #369653 !important;
 }
