@@ -28,11 +28,10 @@ public class TileLaunchService {
 
             } else if (tile.getType().equals("INSTALLED_APP")) {
 
+                System.out.println("=== NEW INSTALLED APP CODE ===");
+
                 new ProcessBuilder(
-                        "cmd",
-                        "/c",
-                        "start",
-                        "",
+                        "explorer.exe",
                         "shell:AppsFolder\\" + tile.getTarget()).start();
 
             } else {
