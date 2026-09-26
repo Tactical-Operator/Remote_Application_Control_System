@@ -21,6 +21,13 @@ let selectedInstalledApp = null;
 
 
 /*
+ * =====================================================
+ * Server Information
+ * =====================================================
+ */
+
+
+/*
  * Load Spring Boot server information.
  */
 async function loadServerInfo() {
@@ -33,7 +40,9 @@ async function loadServerInfo() {
         const serverInfo =
             await response.json();
 
-        document.getElementById("server-address").textContent =
+        document.getElementById(
+            "server-address"
+        ).textContent =
             `Server - ${serverInfo.address}`;
 
     } catch (error) {
@@ -43,10 +52,19 @@ async function loadServerInfo() {
             error
         );
 
-        document.getElementById("server-address").textContent =
+        document.getElementById(
+            "server-address"
+        ).textContent =
             "Server - Unknown";
     }
 }
+
+
+/*
+ * =====================================================
+ * Tiles
+ * =====================================================
+ */
 
 
 /*
@@ -80,7 +98,9 @@ async function loadTiles() {
 function displayTiles(tiles) {
 
     const container =
-        document.getElementById("tile-container");
+        document.getElementById(
+            "tile-container"
+        );
 
     container.innerHTML = "";
 
@@ -99,18 +119,22 @@ function displayTiles(tiles) {
         const tileElement =
             document.createElement("div");
 
-        tileElement.className = "tile";
+        tileElement.className =
+            "tile";
 
 
         /*
-         * Clicking a tile opens configuration.
+         * Clicking a Windows tile only opens
+         * configuration.
          *
-         * The Windows frontend never launches
-         * the application.
+         * It does NOT launch the application.
          */
         tileElement.addEventListener(
             "click",
-            () => openConfiguration(tile.slotNumber)
+            () =>
+                openConfiguration(
+                    tile.slotNumber
+                )
         );
 
 
@@ -122,7 +146,6 @@ function displayTiles(tiles) {
             tileElement.classList.add(
                 "empty-tile"
             );
-
 
             const plus =
                 document.createElement("div");
@@ -140,21 +163,21 @@ function displayTiles(tiles) {
                 `Slot ${tile.slotNumber}`;
 
 
-            tileElement.appendChild(plus);
-            tileElement.appendChild(label);
+            tileElement.appendChild(
+                plus
+            );
 
-        }
+            tileElement.appendChild(
+                label
+            );
 
+        } else {
 
-        /*
-         * Configured tile.
-         *
-         * Only the icon is displayed.
-         *
-         * No application name.
-         * No application type.
-         */
-        else {
+            /*
+             * Configured tile.
+             *
+             * Only display its icon.
+             */
 
             const icon =
                 document.createElement("img");
@@ -164,19 +187,18 @@ function displayTiles(tiles) {
 
 
             /*
-             * Add timestamp to prevent the browser
-             * from displaying an old cached icon
-             * after changing an application's icon.
+             * Timestamp prevents browser caching
+             * when an icon has been replaced.
              */
             icon.src =
                 `/icons/${tile.icon}?t=${Date.now()}`;
 
-
             icon.alt =
                 tile.name;
 
-
-            tileElement.appendChild(icon);
+            tileElement.appendChild(
+                icon
+            );
         }
 
 
@@ -185,6 +207,13 @@ function displayTiles(tiles) {
         );
     });
 }
+
+
+/*
+ * =====================================================
+ * Configuration Modal
+ * =====================================================
+ */
 
 
 /*
@@ -202,7 +231,9 @@ function openConfiguration(slotNumber) {
 
     document.getElementById(
         "config-modal"
-    ).classList.remove("hidden");
+    ).classList.remove(
+        "hidden"
+    );
 }
 
 
@@ -213,16 +244,19 @@ function closeConfiguration() {
 
     document.getElementById(
         "config-modal"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
-    selectedSlot = null;
+    selectedSlot =
+        null;
 }
 
 
 /*
- * =========================
+ * =====================================================
  * Installed Applications
- * =========================
+ * =====================================================
  */
 
 
@@ -235,15 +269,15 @@ async function openInstalledApps() {
         return;
     }
 
-
     try {
 
         const response =
-            await fetch("/api/installed-apps");
+            await fetch(
+                "/api/installed-apps"
+            );
 
         installedApps =
             await response.json();
-
 
         selectedInstalledApp =
             null;
@@ -271,6 +305,17 @@ async function openInstalledApps() {
         ).value = "";
 
 
+        /*
+         * Make sure the list is visible again
+         * whenever this modal is opened.
+         */
+        document.getElementById(
+            "installed-app-list"
+        ).classList.remove(
+            "hidden"
+        );
+
+
         displayInstalledApps(
             installedApps
         );
@@ -278,13 +323,16 @@ async function openInstalledApps() {
 
         document.getElementById(
             "config-modal"
-        ).classList.add("hidden");
+        ).classList.add(
+            "hidden"
+        );
 
 
         document.getElementById(
             "installed-app-modal"
-        ).classList.remove("hidden");
-
+        ).classList.remove(
+            "hidden"
+        );
 
     } catch (error) {
 
@@ -332,25 +380,35 @@ function displayInstalledApps(apps) {
             app.name;
 
 
-        item.appendChild(name);
+        item.appendChild(
+            name
+        );
 
 
         /*
-         * Selecting an application does NOT save it.
+         * Selecting an application does NOT
+         * save it.
+         *
+         * The user still has to press Save.
          */
         item.addEventListener(
             "click",
             function (event) {
 
                 event.preventDefault();
+
                 event.stopPropagation();
 
-                selectInstalledApp(app);
+                selectInstalledApp(
+                    app
+                );
             }
         );
 
 
-        list.appendChild(item);
+        list.appendChild(
+            item
+        );
     });
 }
 
@@ -363,16 +421,31 @@ function searchInstalledApps() {
     const searchText =
         document.getElementById(
             "installed-app-search"
-        ).value
-        .toLowerCase()
-        .trim();
+        )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    /*
+     * If the user starts searching again,
+     * show the result list again.
+     */
+    document.getElementById(
+        "installed-app-list"
+    ).classList.remove(
+        "hidden"
+    );
 
 
     const filteredApps =
-        installedApps.filter(app =>
-            app.name
-                .toLowerCase()
-                .includes(searchText)
+        installedApps.filter(
+            app =>
+                app.name
+                    .toLowerCase()
+                    .includes(
+                        searchText
+                    )
         );
 
 
@@ -383,11 +456,7 @@ function searchInstalledApps() {
 
 
 /*
- * Select an installed application.
- *
- * IMPORTANT:
- * This function does NOT save.
- * The user must press Save.
+ * Select installed application.
  */
 function selectInstalledApp(app) {
 
@@ -399,6 +468,17 @@ function selectInstalledApp(app) {
         "installed-app-selected"
     ).textContent =
         `Selected: ${app.name}`;
+
+
+    /*
+     * Once an application has been selected,
+     * hide the result list.
+     */
+    document.getElementById(
+        "installed-app-list"
+    ).classList.add(
+        "hidden"
+    );
 }
 
 
@@ -424,9 +504,6 @@ async function saveInstalledApp() {
 
     try {
 
-        /*
-         * Save installed application.
-         */
         const response =
             await fetch(
                 "/api/installed-apps/select",
@@ -465,7 +542,7 @@ async function saveInstalledApp() {
 
 
         /*
-         * Save custom icon if selected.
+         * Save optional custom icon.
          */
         const iconSaved =
             await saveCustomIconIfSelected();
@@ -477,16 +554,13 @@ async function saveInstalledApp() {
 
 
         /*
-         * Close modal only after saving.
-         */
-        closeInstalledApps();
-
-
-        /*
-         * Refresh tiles.
+         * Refresh while selectedSlot
+         * still contains the correct slot.
          */
         await loadTiles();
 
+
+        closeInstalledApps();
 
     } catch (error) {
 
@@ -509,7 +583,9 @@ function closeInstalledApps() {
 
     document.getElementById(
         "installed-app-modal"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
     selectedInstalledApp =
         null;
@@ -520,14 +596,15 @@ function closeInstalledApps() {
 
 
 /*
- * =========================
- * Custom Icon
- * =========================
+ * =====================================================
+ * Existing Optional Custom Icon System
+ * =====================================================
  */
 
 
 /*
- * Save custom icon if the user selected one.
+ * Save a custom icon selected from one of the
+ * Installed App / Custom App / Website forms.
  */
 async function saveCustomIconIfSelected() {
 
@@ -535,15 +612,17 @@ async function saveCustomIconIfSelected() {
 
 
     /*
-     * Determine which custom icon input
-     * is currently being used.
+     * Determine which configuration modal
+     * is currently visible.
      */
     if (
         !document
             .getElementById(
                 "installed-app-modal"
             )
-            .classList.contains("hidden")
+            .classList.contains(
+                "hidden"
+            )
     ) {
 
         fileInput =
@@ -556,7 +635,9 @@ async function saveCustomIconIfSelected() {
             .getElementById(
                 "custom-app-modal"
             )
-            .classList.contains("hidden")
+            .classList.contains(
+                "hidden"
+            )
     ) {
 
         fileInput =
@@ -569,7 +650,9 @@ async function saveCustomIconIfSelected() {
             .getElementById(
                 "website-modal"
             )
-            .classList.contains("hidden")
+            .classList.contains(
+                "hidden"
+            )
     ) {
 
         fileInput =
@@ -581,6 +664,8 @@ async function saveCustomIconIfSelected() {
 
     /*
      * No custom icon selected.
+     *
+     * This is not an error.
      */
     if (
         !fileInput ||
@@ -595,8 +680,34 @@ async function saveCustomIconIfSelected() {
         fileInput.files[0];
 
 
+    return await uploadCustomIcon(
+        file
+    );
+}
+
+
+/*
+ * =====================================================
+ * Shared Custom Icon Upload
+ * =====================================================
+ */
+
+
+/*
+ * Upload one image to the Spring Boot
+ * custom-icon endpoint.
+ *
+ * This function is shared by:
+ *
+ * 1. Installed App custom icon
+ * 2. Custom App custom icon
+ * 3. Website custom icon
+ * 4. Independent Change Icon feature
+ */
+function uploadCustomIcon(file) {
+
     return new Promise(
-        (resolve, reject) => {
+        (resolve) => {
 
             const reader =
                 new FileReader();
@@ -618,22 +729,26 @@ async function saveCustomIconIfSelected() {
                                             "application/json"
                                     },
 
-                                    body: JSON.stringify({
+                                    body:
+                                        JSON.stringify({
 
-                                        slotNumber:
-                                            selectedSlot,
+                                            slotNumber:
+                                                selectedSlot,
 
-                                        imageBase64:
-                                            reader.result
-                                    })
+                                            imageBase64:
+                                                reader.result
+                                        })
                                 }
                             );
 
 
                         if (!response.ok) {
 
+                            const errorText =
+                                await response.text();
+
                             throw new Error(
-                                "Failed to save custom icon."
+                                errorText
                             );
                         }
 
@@ -671,16 +786,152 @@ async function saveCustomIconIfSelected() {
                 };
 
 
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(
+                file
+            );
         }
     );
 }
 
 
 /*
- * =========================
+ * =====================================================
+ * Independent Change Icon
+ * =====================================================
+ */
+
+
+/*
+ * Open independent Change Icon modal.
+ */
+function openChangeIcon() {
+
+    if (selectedSlot === null) {
+        return;
+    }
+
+
+    document.getElementById(
+        "change-icon-slot"
+    ).textContent =
+        `Slot ${selectedSlot}`;
+
+
+    /*
+     * Clear previous file selection.
+     */
+    document.getElementById(
+        "change-icon-file"
+    ).value = "";
+
+
+    /*
+     * Hide configuration modal.
+     */
+    document.getElementById(
+        "config-modal"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    /*
+     * Show Change Icon modal.
+     */
+    document.getElementById(
+        "change-icon-modal"
+    ).classList.remove(
+        "hidden"
+    );
+}
+
+
+/*
+ * Save independent custom icon.
+ *
+ * IMPORTANT:
+ * This does NOT modify:
+ *
+ * name
+ * type
+ * target
+ *
+ * It only replaces the icon for the slot.
+ */
+async function saveIndependentIcon() {
+
+    if (selectedSlot === null) {
+        return;
+    }
+
+
+    const fileInput =
+        document.getElementById(
+            "change-icon-file"
+        );
+
+
+    if (
+        fileInput.files.length === 0
+    ) {
+
+        alert(
+            "Please select an icon first."
+        );
+
+        return;
+    }
+
+
+    const file =
+        fileInput.files[0];
+
+
+    const iconSaved =
+        await uploadCustomIcon(
+            file
+        );
+
+
+    if (!iconSaved) {
+        return;
+    }
+
+
+    /*
+     * Reload the tiles immediately.
+     *
+     * displayTiles() adds a new timestamp
+     * to the image URL, preventing an old
+     * cached icon from being displayed.
+     */
+    await loadTiles();
+
+
+    closeChangeIcon();
+}
+
+
+/*
+ * Close Change Icon modal.
+ */
+function closeChangeIcon() {
+
+    document.getElementById(
+        "change-icon-modal"
+    ).classList.add(
+        "hidden"
+    );
+
+    selectedSlot =
+        null;
+}
+
+
+/*
+ * =====================================================
  * Custom Application
- * =========================
+ * =====================================================
  */
 
 
@@ -718,12 +969,16 @@ function openCustomApp() {
 
     document.getElementById(
         "config-modal"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
 
     document.getElementById(
         "custom-app-modal"
-    ).classList.remove("hidden");
+    ).classList.remove(
+        "hidden"
+    );
 }
 
 
@@ -758,11 +1013,10 @@ function updateCustomAppName() {
 
 
     const appName =
-        fileName
-            .replace(
-                /\.exe$/i,
-                ""
-            );
+        fileName.replace(
+            /\.exe$/i,
+            ""
+        );
 
 
     document.getElementById(
@@ -807,11 +1061,10 @@ async function saveCustomApp() {
 
 
     const name =
-        fileName
-            .replace(
-                /\.exe$/i,
-                ""
-            );
+        fileName.replace(
+            /\.exe$/i,
+            ""
+        );
 
 
     try {
@@ -862,10 +1115,13 @@ async function saveCustomApp() {
         }
 
 
-        closeCustomApp();
-
+        /*
+         * Refresh tiles immediately.
+         */
         await loadTiles();
 
+
+        closeCustomApp();
 
     } catch (error) {
 
@@ -888,7 +1144,9 @@ function closeCustomApp() {
 
     document.getElementById(
         "custom-app-modal"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
     selectedSlot =
         null;
@@ -896,9 +1154,9 @@ function closeCustomApp() {
 
 
 /*
- * =========================
+ * =====================================================
  * Website
- * =========================
+ * =====================================================
  */
 
 
@@ -936,12 +1194,16 @@ function openWebsite() {
 
     document.getElementById(
         "config-modal"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
 
     document.getElementById(
         "website-modal"
-    ).classList.remove("hidden");
+    ).classList.remove(
+        "hidden"
+    );
 }
 
 
@@ -1014,6 +1276,10 @@ async function saveWebsite() {
     }
 
 
+    /*
+     * Automatically add HTTPS when
+     * the user did not type a protocol.
+     */
     if (
         !url.startsWith("http://") &&
         !url.startsWith("https://")
@@ -1080,10 +1346,13 @@ async function saveWebsite() {
         }
 
 
-        closeWebsite();
-
+        /*
+         * Refresh tiles immediately.
+         */
         await loadTiles();
 
+
+        closeWebsite();
 
     } catch (error) {
 
@@ -1106,7 +1375,9 @@ function closeWebsite() {
 
     document.getElementById(
         "website-modal"
-    ).classList.add("hidden");
+    ).classList.add(
+        "hidden"
+    );
 
     selectedSlot =
         null;
@@ -1114,15 +1385,16 @@ function closeWebsite() {
 
 
 /*
- * =========================
+ * =====================================================
  * Event Listeners
- * =========================
+ * =====================================================
  */
 
 
 /*
  * Configuration modal.
  */
+
 document
     .getElementById(
         "installed-app-button"
@@ -1153,6 +1425,20 @@ document
     );
 
 
+/*
+ * NEW:
+ * Independent Change Icon button.
+ */
+document
+    .getElementById(
+        "change-icon-button"
+    )
+    .addEventListener(
+        "click",
+        openChangeIcon
+    );
+
+
 document
     .getElementById(
         "config-cancel-button"
@@ -1164,8 +1450,37 @@ document
 
 
 /*
- * Installed applications.
+ * =====================================================
+ * Change Icon
+ * =====================================================
  */
+
+document
+    .getElementById(
+        "change-icon-save-button"
+    )
+    .addEventListener(
+        "click",
+        saveIndependentIcon
+    );
+
+
+document
+    .getElementById(
+        "change-icon-close-button"
+    )
+    .addEventListener(
+        "click",
+        closeChangeIcon
+    );
+
+
+/*
+ * =====================================================
+ * Installed Applications
+ * =====================================================
+ */
+
 document
     .getElementById(
         "installed-app-search"
@@ -1197,8 +1512,11 @@ document
 
 
 /*
- * Custom application.
+ * =====================================================
+ * Custom Application
+ * =====================================================
  */
+
 document
     .getElementById(
         "custom-app-path"
@@ -1230,8 +1548,11 @@ document
 
 
 /*
- * Website.
+ * =====================================================
+ * Website
+ * =====================================================
  */
+
 document
     .getElementById(
         "website-url"
@@ -1263,9 +1584,9 @@ document
 
 
 /*
- * =========================
+ * =====================================================
  * Initial Page Load
- * =========================
+ * =====================================================
  */
 
 loadServerInfo();
