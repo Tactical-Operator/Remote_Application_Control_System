@@ -17,7 +17,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        for (int i = 1; i <= 8; i++) {
+        for (int i = 1; i <= 15; i++) {
 
             if (tileRepository.findBySlotNumber(i).isEmpty()) {
 
@@ -29,6 +29,6 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
 
-        System.out.println("RemotePulse: 8 tile slots ready.");
+        System.out.println("RemotePulse: 15 tile slots ready.");
     }
 }
