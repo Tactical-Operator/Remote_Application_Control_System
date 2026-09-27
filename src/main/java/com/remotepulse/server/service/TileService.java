@@ -4,6 +4,7 @@ import com.remotepulse.server.entity.Tile;
 import com.remotepulse.server.repository.TileRepository;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 
 
@@ -53,4 +54,52 @@ public class TileService{
 
         return tileRepository.save(existingTile);
     }
+    public Tile clearTile(Integer slotNumber) {
+
+    Tile tile =
+            tileRepository
+                    .findBySlotNumber(slotNumber)
+                    .orElseThrow(() ->
+                            new RuntimeException(
+                                    "Tile slot not found: "
+                                            + slotNumber
+                            )
+                    );
+
+    /*
+     * Delete the physical icon file.
+     */
+    if (tile.getIcon() != null) {
+
+        File iconFile =
+                new File(
+                        "src/main/resources/static/icons",
+                        tile.getIcon()
+                );
+
+        if (iconFile.exists()) {
+
+            boolean deleted =
+                    iconFile.delete();
+
+            System.out.println(
+                    "Icon deleted: " + deleted
+            );
+        }
+    }
+
+
+    /*
+     * Keep the slot itself.
+     *
+     * Only remove its configuration.
+     */
+    tile.setName(null);
+    tile.setType(null);
+    tile.setTarget(null);
+    tile.setIcon(null);
+
+
+    return tileRepository.save(tile);
+}
 }
