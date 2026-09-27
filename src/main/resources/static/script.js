@@ -1,11 +1,22 @@
 /*
+ * =====================================================
+ * Remote Pulse
+ * script.js
+ * =====================================================
+ */
+
+
+/*
  * Stores the slot currently being configured.
- *
- * Example:
- * Click Slot 5
- * selectedSlot = 5
  */
 let selectedSlot = null;
+
+
+/*
+ * Stores the latest Tile objects received
+ * from Spring Boot.
+ */
+let currentTiles = [];
 
 
 /*
@@ -15,7 +26,8 @@ let installedApps = [];
 
 
 /*
- * Stores the installed application currently selected.
+ * Stores the installed application
+ * currently selected by the user.
  */
 let selectedInstalledApp = null;
 
@@ -35,10 +47,14 @@ async function loadServerInfo() {
     try {
 
         const response =
-            await fetch("/api/server-info");
+            await fetch(
+                "/api/server-info"
+            );
+
 
         const serverInfo =
             await response.json();
+
 
         document.getElementById(
             "server-address"
@@ -51,6 +67,7 @@ async function loadServerInfo() {
             "Failed to load server information:",
             error
         );
+
 
         document.getElementById(
             "server-address"
@@ -68,19 +85,49 @@ async function loadServerInfo() {
 
 
 /*
- * Load all tiles from the backend.
+ * Load all tiles from Spring Boot.
  */
 async function loadTiles() {
+
+    console.log(
+        ">>> loadTiles() CALLED"
+    );
+
 
     try {
 
         const response =
-            await fetch("/api/tiles");
+            await fetch(
+                `/api/tiles?t=${Date.now()}`,
+                {
+                    cache: "no-store"
+                }
+            );
+
 
         const tiles =
             await response.json();
 
-        displayTiles(tiles);
+
+        /*
+         * Store the complete tile list.
+         *
+         * This allows openConfiguration()
+         * to inspect the clicked tile.
+         */
+        currentTiles =
+            tiles;
+
+
+        console.log(
+            ">>> TILES RECEIVED:",
+            tiles
+        );
+
+
+        displayTiles(
+            tiles
+        );
 
     } catch (error) {
 
@@ -93,7 +140,7 @@ async function loadTiles() {
 
 
 /*
- * Display all 8 tiles.
+ * Display all 15 tiles.
  */
 function displayTiles(tiles) {
 
@@ -102,102 +149,179 @@ function displayTiles(tiles) {
             "tile-container"
         );
 
-    container.innerHTML = "";
+
+    container.innerHTML =
+        "";
 
 
     /*
-     * Sort tiles by slot number.
+     * Sort:
+     *
+     * 1
+     * 2
+     * 3
+     * ...
+     * 15
      */
     tiles.sort(
         (a, b) =>
-            a.slotNumber - b.slotNumber
+            a.slotNumber -
+            b.slotNumber
     );
 
 
     tiles.forEach(tile => {
 
         const tileElement =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         tileElement.className =
             "tile";
 
 
         /*
-         * Clicking a Windows tile only opens
-         * configuration.
+         * Clicking a tile on the Windows
+         * configuration page DOES NOT
+         * launch the application.
          *
-         * It does NOT launch the application.
+         * It only opens configuration.
          */
         tileElement.addEventListener(
             "click",
-            () =>
+            () => {
                 openConfiguration(
                     tile.slotNumber
-                )
+                );
+            }
         );
 
 
         /*
-         * Empty tile.
+         * Tile is empty only when
+         * absolutely nothing is configured.
          */
-        if (!tile.name) {
+        const isEmpty =
+            !tile.name &&
+            !tile.type &&
+            !tile.target &&
+            !tile.icon;
+
+
+        /*
+         * Completely empty slot.
+         */
+        if (isEmpty) {
 
             tileElement.classList.add(
                 "empty-tile"
             );
 
-            const plus =
-                document.createElement("div");
 
-            plus.textContent = "+";
-
-
-            const label =
-                document.createElement("div");
-
-            label.className =
-                "empty-tile-label";
-
-            label.textContent =
-                `Slot ${tile.slotNumber}`;
+            const questionMark =
+                document.createElement(
+                    "div"
+                );
 
 
-            tileElement.appendChild(
-                plus
-            );
+            questionMark.className =
+                "empty-tile-question";
+
+
+            questionMark.textContent =
+                "?";
+
 
             tileElement.appendChild(
-                label
+                questionMark
             );
+        }
 
-        } else {
 
-            /*
-             * Configured tile.
-             *
-             * Only display its icon.
-             */
+        /*
+         * Configured slot having an icon.
+         */
+        else if (tile.icon) {
 
             const icon =
-                document.createElement("img");
+                document.createElement(
+                    "img"
+                );
+
 
             icon.className =
                 "tile-icon";
 
 
             /*
-             * Timestamp prevents browser caching
-             * when an icon has been replaced.
+             * Add a unique value to prevent
+             * Chrome from displaying an old
+             * cached slot-X.png.
              */
+            const iconUrl =
+                `/icons/${tile.icon}` +
+                `?v=${Date.now()}-${Math.random()}`;
+
+
+            icon.onload =
+                function () {
+
+                    console.log(
+                        `ICON LOADED FOR SLOT ${tile.slotNumber}:`,
+                        tile.name
+                    );
+                };
+
+
+            icon.onerror =
+                function () {
+
+                    console.error(
+                        `ICON FAILED FOR SLOT ${tile.slotNumber}:`,
+                        iconUrl
+                    );
+                };
+
+
             icon.src =
-                `/icons/${tile.icon}?t=${Date.now()}`;
+                iconUrl;
+
 
             icon.alt =
-                tile.name;
+                tile.name ||
+                `Slot ${tile.slotNumber}`;
+
 
             tileElement.appendChild(
                 icon
+            );
+        }
+
+
+        /*
+         * Configuration exists but there
+         * is currently no icon.
+         */
+        else {
+
+            const questionMark =
+                document.createElement(
+                    "div"
+                );
+
+
+            questionMark.className =
+                "empty-tile-question";
+
+
+            questionMark.textContent =
+                "?";
+
+
+            tileElement.appendChild(
+                questionMark
             );
         }
 
@@ -217,17 +341,76 @@ function displayTiles(tiles) {
 
 
 /*
- * Open configuration modal.
+ * Open Configure Tile modal.
  */
 function openConfiguration(slotNumber) {
 
     selectedSlot =
         slotNumber;
 
+
+    /*
+     * Find the complete Tile object.
+     */
+    const tile =
+        currentTiles.find(
+            tile =>
+                tile.slotNumber ===
+                slotNumber
+        );
+
+
     document.getElementById(
         "config-slot"
     ).textContent =
         `Slot ${slotNumber}`;
+
+
+    const deleteButton =
+        document.getElementById(
+            "delete-configuration-button"
+        );
+
+
+    /*
+     * A slot counts as configured if
+     * ANYTHING exists:
+     *
+     * name
+     * type
+     * target
+     * icon
+     *
+     * Therefore an icon-only tile also
+     * counts as configured.
+     */
+    const isConfigured =
+        tile &&
+        (
+            tile.name ||
+            tile.type ||
+            tile.target ||
+            tile.icon
+        );
+
+
+    /*
+     * Only configured tiles should
+     * display Delete Configuration.
+     */
+    if (isConfigured) {
+
+        deleteButton.classList.remove(
+            "hidden"
+        );
+
+    } else {
+
+        deleteButton.classList.add(
+            "hidden"
+        );
+    }
+
 
     document.getElementById(
         "config-modal"
@@ -238,7 +421,7 @@ function openConfiguration(slotNumber) {
 
 
 /*
- * Close configuration modal.
+ * Close Configure Tile modal.
  */
 function closeConfiguration() {
 
@@ -248,8 +431,280 @@ function closeConfiguration() {
         "hidden"
     );
 
+
     selectedSlot =
         null;
+}
+
+
+/*
+ * =====================================================
+ * Delete Configuration
+ * =====================================================
+ */
+
+
+/*
+ * Open Delete Configuration confirmation.
+ */
+function openDeleteConfiguration() {
+
+    if (selectedSlot === null) {
+        return;
+    }
+
+
+    const tile =
+        currentTiles.find(
+            tile =>
+                tile.slotNumber ===
+                selectedSlot
+        );
+
+
+    if (!tile) {
+
+        console.error(
+            "Selected tile could not be found."
+        );
+
+        return;
+    }
+
+
+    let displayName;
+
+
+    /*
+     * Website:
+     *
+     * Show the actual website URL.
+     *
+     * Example:
+     * https://github.com
+     */
+    if (
+        tile.type === "WEBSITE" &&
+        tile.target
+    ) {
+
+        displayName =
+            tile.target;
+    }
+
+
+    /*
+     * Installed application:
+     *
+     * Example:
+     * Visual Studio Code
+     */
+    else if (
+        tile.type === "INSTALLED_APP" &&
+        tile.name
+    ) {
+
+        displayName =
+            tile.name;
+    }
+
+
+    /*
+     * Custom application:
+     *
+     * Example:
+     * water_breaktest
+     */
+    else if (
+        tile.type === "CUSTOM_APP" &&
+        tile.name
+    ) {
+
+        displayName =
+            tile.name;
+    }
+
+
+    /*
+     * Generic name fallback.
+     */
+    else if (tile.name) {
+
+        displayName =
+            tile.name;
+    }
+
+
+    /*
+     * Icon-only slot.
+     */
+    else if (tile.icon) {
+
+        displayName =
+            `Icon for Slot ${tile.slotNumber}`;
+    }
+
+
+    /*
+     * Final fallback.
+     */
+    else {
+
+        displayName =
+            `Slot ${tile.slotNumber}`;
+    }
+
+
+    document.getElementById(
+        "delete-configuration-name"
+    ).textContent =
+        displayName;
+
+
+    /*
+     * Hide configuration modal.
+     */
+    document.getElementById(
+        "config-modal"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    /*
+     * Show delete confirmation.
+     */
+    document.getElementById(
+        "delete-configuration-modal"
+    ).classList.remove(
+        "hidden"
+    );
+}
+
+
+/*
+ * User clicked No.
+ */
+function cancelDeleteConfiguration() {
+
+    /*
+     * Hide delete confirmation.
+     */
+    document.getElementById(
+        "delete-configuration-modal"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    /*
+     * Return to Configure Tile.
+     */
+    document.getElementById(
+        "config-modal"
+    ).classList.remove(
+        "hidden"
+    );
+}
+
+
+/*
+ * User clicked Yes.
+ */
+async function deleteConfiguration() {
+
+    if (selectedSlot === null) {
+        return;
+    }
+
+
+    /*
+     * Remember the slot before
+     * selectedSlot is cleared.
+     */
+    const slotToDelete =
+        selectedSlot;
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/api/tiles/slot/${slotToDelete}/configuration`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+
+            throw new Error(
+                errorText
+            );
+        }
+
+
+        /*
+         * Give the backend a small moment
+         * after deleting the icon file.
+         */
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    300
+                )
+        );
+
+
+        /*
+         * Reload fresh tile information.
+         */
+        await loadTiles();
+
+
+        /*
+         * Hide confirmation modal.
+         */
+        document.getElementById(
+            "delete-configuration-modal"
+        ).classList.add(
+            "hidden"
+        );
+
+
+        /*
+         * Make sure Configure Tile is
+         * also closed.
+         */
+        document.getElementById(
+            "config-modal"
+        ).classList.add(
+            "hidden"
+        );
+
+
+        selectedSlot =
+            null;
+
+
+    } catch (error) {
+
+        console.error(
+            "Failed to delete configuration:",
+            error
+        );
+
+
+        alert(
+            "Failed to delete configuration."
+        );
+    }
 }
 
 
@@ -261,13 +716,14 @@ function closeConfiguration() {
 
 
 /*
- * Open installed applications modal.
+ * Open Installed Applications modal.
  */
 async function openInstalledApps() {
 
     if (selectedSlot === null) {
         return;
     }
+
 
     try {
 
@@ -276,8 +732,10 @@ async function openInstalledApps() {
                 "/api/installed-apps"
             );
 
+
         installedApps =
             await response.json();
+
 
         selectedInstalledApp =
             null;
@@ -291,7 +749,8 @@ async function openInstalledApps() {
 
         document.getElementById(
             "installed-app-search"
-        ).value = "";
+        ).value =
+            "";
 
 
         document.getElementById(
@@ -302,12 +761,13 @@ async function openInstalledApps() {
 
         document.getElementById(
             "installed-app-custom-icon"
-        ).value = "";
+        ).value =
+            "";
 
 
         /*
-         * Make sure the list is visible again
-         * whenever this modal is opened.
+         * Make sure the result list
+         * is visible when modal opens.
          */
         document.getElementById(
             "installed-app-list"
@@ -321,6 +781,9 @@ async function openInstalledApps() {
         );
 
 
+        /*
+         * Hide main configuration modal.
+         */
         document.getElementById(
             "config-modal"
         ).classList.add(
@@ -328,11 +791,15 @@ async function openInstalledApps() {
         );
 
 
+        /*
+         * Show Installed Apps modal.
+         */
         document.getElementById(
             "installed-app-modal"
         ).classList.remove(
             "hidden"
         );
+
 
     } catch (error) {
 
@@ -340,6 +807,7 @@ async function openInstalledApps() {
             "Failed to load installed applications:",
             error
         );
+
 
         alert(
             "Failed to load installed applications."
@@ -358,23 +826,32 @@ function displayInstalledApps(apps) {
             "installed-app-list"
         );
 
-    list.innerHTML = "";
+
+    list.innerHTML =
+        "";
 
 
     apps.forEach(app => {
 
         const item =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         item.className =
             "installed-app-item";
 
 
         const name =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         name.className =
             "installed-app-item-name";
+
 
         name.textContent =
             app.name;
@@ -386,10 +863,10 @@ function displayInstalledApps(apps) {
 
 
         /*
-         * Selecting an application does NOT
-         * save it.
+         * Selecting an application does
+         * NOT save it yet.
          *
-         * The user still has to press Save.
+         * User must still press Save.
          */
         item.addEventListener(
             "click",
@@ -398,6 +875,7 @@ function displayInstalledApps(apps) {
                 event.preventDefault();
 
                 event.stopPropagation();
+
 
                 selectInstalledApp(
                     app
@@ -415,6 +893,10 @@ function displayInstalledApps(apps) {
 
 /*
  * Search installed applications locally.
+ *
+ * The complete app list is already loaded
+ * from Spring Boot, so typing does not
+ * make another backend request.
  */
 function searchInstalledApps() {
 
@@ -428,8 +910,8 @@ function searchInstalledApps() {
 
 
     /*
-     * If the user starts searching again,
-     * show the result list again.
+     * User started typing again,
+     * so show results again.
      */
     document.getElementById(
         "installed-app-list"
@@ -456,7 +938,7 @@ function searchInstalledApps() {
 
 
 /*
- * Select installed application.
+ * Select one installed application.
  */
 function selectInstalledApp(app) {
 
@@ -471,8 +953,8 @@ function selectInstalledApp(app) {
 
 
     /*
-     * Once an application has been selected,
-     * hide the result list.
+     * Hide result list once an
+     * application has been selected.
      */
     document.getElementById(
         "installed-app-list"
@@ -483,7 +965,7 @@ function selectInstalledApp(app) {
 
 
 /*
- * Save installed application.
+ * Save selected installed application.
  */
 async function saveInstalledApp() {
 
@@ -535,6 +1017,7 @@ async function saveInstalledApp() {
             const errorText =
                 await response.text();
 
+
             throw new Error(
                 errorText
             );
@@ -542,7 +1025,8 @@ async function saveInstalledApp() {
 
 
         /*
-         * Save optional custom icon.
+         * If the user selected a custom
+         * icon, upload it now.
          */
         const iconSaved =
             await saveCustomIconIfSelected();
@@ -554,13 +1038,29 @@ async function saveInstalledApp() {
 
 
         /*
-         * Refresh while selectedSlot
-         * still contains the correct slot.
+         * IMPORTANT:
+         *
+         * We previously found that the
+         * generated icon sometimes wasn't
+         * immediately available when the
+         * frontend refreshed.
+         *
+         * Keep this 500 ms delay.
          */
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    500
+                )
+        );
+
+
         await loadTiles();
 
 
         closeInstalledApps();
+
 
     } catch (error) {
 
@@ -568,6 +1068,7 @@ async function saveInstalledApp() {
             "Failed to save installed application:",
             error
         );
+
 
         alert(
             "Failed to save installed application."
@@ -577,7 +1078,7 @@ async function saveInstalledApp() {
 
 
 /*
- * Close installed applications modal.
+ * Close Installed Applications modal.
  */
 function closeInstalledApps() {
 
@@ -587,8 +1088,10 @@ function closeInstalledApps() {
         "hidden"
     );
 
+
     selectedInstalledApp =
         null;
+
 
     selectedSlot =
         null;
@@ -597,14 +1100,21 @@ function closeInstalledApps() {
 
 /*
  * =====================================================
- * Existing Optional Custom Icon System
+ * Optional Custom Icon System
  * =====================================================
  */
 
 
 /*
- * Save a custom icon selected from one of the
- * Installed App / Custom App / Website forms.
+ * Check whether the user selected a
+ * custom icon from:
+ *
+ * Installed App
+ * Custom App
+ * Website
+ *
+ * If no icon was selected, return true
+ * because that is perfectly valid.
  */
 async function saveCustomIconIfSelected() {
 
@@ -612,8 +1122,7 @@ async function saveCustomIconIfSelected() {
 
 
     /*
-     * Determine which configuration modal
-     * is currently visible.
+     * Installed Application modal.
      */
     if (
         !document
@@ -629,8 +1138,13 @@ async function saveCustomIconIfSelected() {
             document.getElementById(
                 "installed-app-custom-icon"
             );
+    }
 
-    } else if (
+
+    /*
+     * Custom Application modal.
+     */
+    else if (
         !document
             .getElementById(
                 "custom-app-modal"
@@ -644,8 +1158,13 @@ async function saveCustomIconIfSelected() {
             document.getElementById(
                 "custom-app-custom-icon"
             );
+    }
 
-    } else if (
+
+    /*
+     * Website modal.
+     */
+    else if (
         !document
             .getElementById(
                 "website-modal"
@@ -665,7 +1184,7 @@ async function saveCustomIconIfSelected() {
     /*
      * No custom icon selected.
      *
-     * This is not an error.
+     * This is NOT an error.
      */
     if (
         !fileInput ||
@@ -694,20 +1213,19 @@ async function saveCustomIconIfSelected() {
 
 
 /*
- * Upload one image to the Spring Boot
- * custom-icon endpoint.
+ * Upload an image to Spring Boot.
  *
- * This function is shared by:
+ * Used by:
  *
- * 1. Installed App custom icon
- * 2. Custom App custom icon
- * 3. Website custom icon
- * 4. Independent Change Icon feature
+ * Installed App custom icon
+ * Custom App custom icon
+ * Website custom icon
+ * Change Icon
  */
 function uploadCustomIcon(file) {
 
     return new Promise(
-        (resolve) => {
+        resolve => {
 
             const reader =
                 new FileReader();
@@ -747,13 +1265,17 @@ function uploadCustomIcon(file) {
                             const errorText =
                                 await response.text();
 
+
                             throw new Error(
                                 errorText
                             );
                         }
 
 
-                        resolve(true);
+                        resolve(
+                            true
+                        );
+
 
                     } catch (error) {
 
@@ -762,11 +1284,15 @@ function uploadCustomIcon(file) {
                             error
                         );
 
+
                         alert(
                             "Failed to save custom icon."
                         );
 
-                        resolve(false);
+
+                        resolve(
+                            false
+                        );
                     }
                 };
 
@@ -778,11 +1304,15 @@ function uploadCustomIcon(file) {
                         "Failed to read icon file."
                     );
 
+
                     alert(
                         "Failed to read icon file."
                     );
 
-                    resolve(false);
+
+                    resolve(
+                        false
+                    );
                 };
 
 
@@ -802,7 +1332,7 @@ function uploadCustomIcon(file) {
 
 
 /*
- * Open independent Change Icon modal.
+ * Open Change Icon modal.
  */
 function openChangeIcon() {
 
@@ -822,7 +1352,8 @@ function openChangeIcon() {
      */
     document.getElementById(
         "change-icon-file"
-    ).value = "";
+    ).value =
+        "";
 
 
     /*
@@ -849,14 +1380,13 @@ function openChangeIcon() {
 /*
  * Save independent custom icon.
  *
- * IMPORTANT:
- * This does NOT modify:
+ * This DOES NOT change:
  *
  * name
  * type
  * target
  *
- * It only replaces the icon for the slot.
+ * Only icon is changed.
  */
 async function saveIndependentIcon() {
 
@@ -899,12 +1429,18 @@ async function saveIndependentIcon() {
 
 
     /*
-     * Reload the tiles immediately.
-     *
-     * displayTiles() adds a new timestamp
-     * to the image URL, preventing an old
-     * cached icon from being displayed.
+     * Small delay helps when replacing
+     * the physical slot-X.png file.
      */
+    await new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                300
+            )
+    );
+
+
     await loadTiles();
 
 
@@ -922,6 +1458,7 @@ function closeChangeIcon() {
     ).classList.add(
         "hidden"
     );
+
 
     selectedSlot =
         null;
@@ -953,7 +1490,8 @@ function openCustomApp() {
 
     document.getElementById(
         "custom-app-path"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.getElementById(
@@ -964,9 +1502,13 @@ function openCustomApp() {
 
     document.getElementById(
         "custom-app-custom-icon"
-    ).value = "";
+    ).value =
+        "";
 
 
+    /*
+     * Hide Configure Tile.
+     */
     document.getElementById(
         "config-modal"
     ).classList.add(
@@ -974,6 +1516,9 @@ function openCustomApp() {
     );
 
 
+    /*
+     * Show Custom App modal.
+     */
     document.getElementById(
         "custom-app-modal"
     ).classList.remove(
@@ -983,7 +1528,16 @@ function openCustomApp() {
 
 
 /*
- * Update custom application name.
+ * Automatically determine the app name
+ * from the entered EXE path.
+ *
+ * Example:
+ *
+ * D:\Apps\Spotify.exe
+ *
+ * becomes:
+ *
+ * Spotify
  */
 function updateCustomAppName() {
 
@@ -1100,12 +1654,16 @@ async function saveCustomApp() {
             const errorText =
                 await response.text();
 
+
             throw new Error(
                 errorText
             );
         }
 
 
+        /*
+         * Optional custom icon.
+         */
         const iconSaved =
             await saveCustomIconIfSelected();
 
@@ -1116,12 +1674,22 @@ async function saveCustomApp() {
 
 
         /*
-         * Refresh tiles immediately.
+         * Give icon generation a moment.
          */
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    300
+                )
+        );
+
+
         await loadTiles();
 
 
         closeCustomApp();
+
 
     } catch (error) {
 
@@ -1129,6 +1697,7 @@ async function saveCustomApp() {
             "Failed to save custom application:",
             error
         );
+
 
         alert(
             "Failed to save custom application."
@@ -1147,6 +1716,7 @@ function closeCustomApp() {
     ).classList.add(
         "hidden"
     );
+
 
     selectedSlot =
         null;
@@ -1178,7 +1748,8 @@ function openWebsite() {
 
     document.getElementById(
         "website-url"
-    ).value = "";
+    ).value =
+        "";
 
 
     document.getElementById(
@@ -1189,9 +1760,13 @@ function openWebsite() {
 
     document.getElementById(
         "website-custom-icon"
-    ).value = "";
+    ).value =
+        "";
 
 
+    /*
+     * Hide Configure Tile.
+     */
     document.getElementById(
         "config-modal"
     ).classList.add(
@@ -1199,6 +1774,9 @@ function openWebsite() {
     );
 
 
+    /*
+     * Show Website modal.
+     */
     document.getElementById(
         "website-modal"
     ).classList.remove(
@@ -1208,7 +1786,8 @@ function openWebsite() {
 
 
 /*
- * Update website name.
+ * Update website display name
+ * while the user types.
  */
 function updateWebsiteName() {
 
@@ -1229,10 +1808,35 @@ function updateWebsiteName() {
     }
 
 
+    /*
+     * Allow the preview to work even
+     * if user has not typed https:// yet.
+     */
+    let previewUrl =
+        url;
+
+
+    if (
+        !previewUrl.startsWith(
+            "http://"
+        ) &&
+        !previewUrl.startsWith(
+            "https://"
+        )
+    ) {
+
+        previewUrl =
+            "https://" +
+            previewUrl;
+    }
+
+
     try {
 
         const parsedUrl =
-            new URL(url);
+            new URL(
+                previewUrl
+            );
 
 
         document.getElementById(
@@ -1240,7 +1844,8 @@ function updateWebsiteName() {
         ).textContent =
             `Website: ${parsedUrl.hostname}`;
 
-    } catch {
+
+    } catch (error) {
 
         document.getElementById(
             "website-name"
@@ -1278,22 +1883,29 @@ async function saveWebsite() {
 
     /*
      * Automatically add HTTPS when
-     * the user did not type a protocol.
+     * protocol was not entered.
      */
     if (
-        !url.startsWith("http://") &&
-        !url.startsWith("https://")
+        !url.startsWith(
+            "http://"
+        ) &&
+        !url.startsWith(
+            "https://"
+        )
     ) {
 
         url =
-            "https://" + url;
+            "https://" +
+            url;
     }
 
 
     try {
 
         const parsedUrl =
-            new URL(url);
+            new URL(
+                url
+            );
 
 
         const name =
@@ -1331,12 +1943,16 @@ async function saveWebsite() {
             const errorText =
                 await response.text();
 
+
             throw new Error(
                 errorText
             );
         }
 
 
+        /*
+         * Optional custom icon.
+         */
         const iconSaved =
             await saveCustomIconIfSelected();
 
@@ -1347,12 +1963,23 @@ async function saveWebsite() {
 
 
         /*
-         * Refresh tiles immediately.
+         * Give website icon generation
+         * a moment before refreshing.
          */
+        await new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    300
+                )
+        );
+
+
         await loadTiles();
 
 
         closeWebsite();
+
 
     } catch (error) {
 
@@ -1360,6 +1987,7 @@ async function saveWebsite() {
             "Failed to save website:",
             error
         );
+
 
         alert(
             "Failed to save website."
@@ -1379,6 +2007,7 @@ function closeWebsite() {
         "hidden"
     );
 
+
     selectedSlot =
         null;
 }
@@ -1392,9 +2021,15 @@ function closeWebsite() {
 
 
 /*
- * Configuration modal.
+ * =====================================================
+ * Configure Tile
+ * =====================================================
  */
 
+
+/*
+ * Installed Application.
+ */
 document
     .getElementById(
         "installed-app-button"
@@ -1405,6 +2040,9 @@ document
     );
 
 
+/*
+ * Custom Application.
+ */
 document
     .getElementById(
         "custom-app-button"
@@ -1415,6 +2053,9 @@ document
     );
 
 
+/*
+ * Website.
+ */
 document
     .getElementById(
         "website-button"
@@ -1426,8 +2067,7 @@ document
 
 
 /*
- * NEW:
- * Independent Change Icon button.
+ * Change Icon.
  */
 document
     .getElementById(
@@ -1439,6 +2079,22 @@ document
     );
 
 
+/*
+ * Delete Configuration.
+ */
+document
+    .getElementById(
+        "delete-configuration-button"
+    )
+    .addEventListener(
+        "click",
+        openDeleteConfiguration
+    );
+
+
+/*
+ * Configure Tile Cancel.
+ */
 document
     .getElementById(
         "config-cancel-button"
@@ -1451,10 +2107,47 @@ document
 
 /*
  * =====================================================
+ * Delete Configuration
+ * =====================================================
+ */
+
+
+/*
+ * YES.
+ */
+document
+    .getElementById(
+        "delete-configuration-yes-button"
+    )
+    .addEventListener(
+        "click",
+        deleteConfiguration
+    );
+
+
+/*
+ * NO.
+ */
+document
+    .getElementById(
+        "delete-configuration-no-button"
+    )
+    .addEventListener(
+        "click",
+        cancelDeleteConfiguration
+    );
+
+
+/*
+ * =====================================================
  * Change Icon
  * =====================================================
  */
 
+
+/*
+ * Save changed icon.
+ */
 document
     .getElementById(
         "change-icon-save-button"
@@ -1465,6 +2158,9 @@ document
     );
 
 
+/*
+ * Cancel Change Icon.
+ */
 document
     .getElementById(
         "change-icon-close-button"
@@ -1481,6 +2177,10 @@ document
  * =====================================================
  */
 
+
+/*
+ * Search while typing.
+ */
 document
     .getElementById(
         "installed-app-search"
@@ -1491,6 +2191,9 @@ document
     );
 
 
+/*
+ * Save installed application.
+ */
 document
     .getElementById(
         "installed-app-save-button"
@@ -1501,6 +2204,9 @@ document
     );
 
 
+/*
+ * Cancel Installed Applications.
+ */
 document
     .getElementById(
         "installed-app-close-button"
@@ -1517,6 +2223,11 @@ document
  * =====================================================
  */
 
+
+/*
+ * Update app name while EXE
+ * path is being entered.
+ */
 document
     .getElementById(
         "custom-app-path"
@@ -1527,6 +2238,9 @@ document
     );
 
 
+/*
+ * Save Custom Application.
+ */
 document
     .getElementById(
         "custom-app-save-button"
@@ -1537,6 +2251,9 @@ document
     );
 
 
+/*
+ * Cancel Custom Application.
+ */
 document
     .getElementById(
         "custom-app-close-button"
@@ -1553,6 +2270,10 @@ document
  * =====================================================
  */
 
+
+/*
+ * Update website name while typing.
+ */
 document
     .getElementById(
         "website-url"
@@ -1563,6 +2284,9 @@ document
     );
 
 
+/*
+ * Save Website.
+ */
 document
     .getElementById(
         "website-save-button"
@@ -1573,6 +2297,9 @@ document
     );
 
 
+/*
+ * Cancel Website.
+ */
 document
     .getElementById(
         "website-close-button"
@@ -1589,6 +2316,14 @@ document
  * =====================================================
  */
 
+
+/*
+ * Display Spring Boot server IP.
+ */
 loadServerInfo();
 
+
+/*
+ * Load all 15 Remote Pulse tiles.
+ */
 loadTiles();
