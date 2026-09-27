@@ -50,4 +50,12 @@ public class TilesController {
         return "Tile '" + tile.getName() + "' Launched Successfully";
     }
 
+    @DeleteMapping("/slot/{slotNumber}/configuration")
+    public Tile clearTile(
+            @PathVariable Integer slotNumber) {
+
+        return tileService.clearTile(
+                slotNumber);
+    }
+
 }
