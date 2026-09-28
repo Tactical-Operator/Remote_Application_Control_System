@@ -14,240 +14,199 @@ import java.util.Base64;
 @Service
 public class CustomIconService {
 
-    private final TileRepository tileRepository;
+        private final TileRepository tileRepository;
 
-    public CustomIconService(TileRepository tileRepository) {
-        this.tileRepository = tileRepository;
-    }
-
-    public Tile saveCustomIcon(
-            Integer slotNumber,
-            String imageBase64
-    ) {
-
-        /*
-         * Find the tile using its slot number.
-         */
-        Tile tile =
-                tileRepository
-                        .findBySlotNumber(slotNumber)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Tile slot not found: "
-                                                + slotNumber
-                                )
-                        );
-
-        /*
-         * Remove the Base64 data prefix.
-         *
-         * Example:
-         *
-         * data:image/png;base64,ABC123...
-         *
-         * becomes:
-         *
-         * ABC123...
-         */
-        if (imageBase64.contains(",")) {
-
-            imageBase64 =
-                    imageBase64.substring(
-                            imageBase64.indexOf(",") + 1
-                    );
+        public CustomIconService(TileRepository tileRepository) {
+                this.tileRepository = tileRepository;
         }
 
-        try {
-
-            /*
-             * Convert Base64 into bytes.
-             */
-            byte[] imageBytes =
-                    Base64.getDecoder().decode(
-                            imageBase64
-                    );
-
-            /*
-             * Convert bytes into an image.
-             */
-            ByteArrayInputStream inputStream =
-                    new ByteArrayInputStream(
-                            imageBytes
-                    );
-
-            BufferedImage originalImage =
-                    ImageIO.read(inputStream);
-
-            if (originalImage == null) {
-
-                throw new RuntimeException(
-                        "Unsupported image format."
-                );
-            }
-
-            /*
-             * Create our standard 256 x 256 icon.
-             */
-            int canvasSize = 256;
-
-            BufferedImage icon =
-                    new BufferedImage(
-                            canvasSize,
-                            canvasSize,
-                            BufferedImage.TYPE_INT_ARGB
-                    );
-
-            Graphics2D graphics =
-                    icon.createGraphics();
-
-            try {
+        public Tile saveCustomIcon(
+                        Integer slotNumber,
+                        String imageBase64) {
 
                 /*
-                 * Transparent background.
+                 * Find the tile using its slot number.
                  */
-                graphics.setComposite(
-                        AlphaComposite.Clear
-                );
-
-                graphics.fillRect(
-                        0,
-                        0,
-                        canvasSize,
-                        canvasSize
-                );
-
-                graphics.setComposite(
-                        AlphaComposite.SrcOver
-                );
+                Tile tile = tileRepository
+                                .findBySlotNumber(slotNumber)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "Tile slot not found: "
+                                                                + slotNumber));
 
                 /*
-                 * High-quality image rendering.
+                 * Remove the Base64 data prefix.
+                 *
+                 * Example:
+                 *
+                 * data:image/png;base64,ABC123...
+                 *
+                 * becomes:
+                 *
+                 * ABC123...
                  */
-                graphics.setRenderingHint(
-                        RenderingHints.KEY_INTERPOLATION,
-                        RenderingHints.VALUE_INTERPOLATION_BICUBIC
-                );
+                if (imageBase64.contains(",")) {
 
-                graphics.setRenderingHint(
-                        RenderingHints.KEY_RENDERING,
-                        RenderingHints.VALUE_RENDER_QUALITY
-                );
+                        imageBase64 = imageBase64.substring(
+                                        imageBase64.indexOf(",") + 1);
+                }
 
-                graphics.setRenderingHint(
-                        RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON
-                );
+                try {
 
-                /*
-                 * Calculate the size while
-                 * preserving the original
-                 * aspect ratio.
-                 */
-                double scale =
-                        Math.min(
-                                (double) canvasSize /
-                                        originalImage.getWidth(),
+                        /*
+                         * Convert Base64 into bytes.
+                         */
+                        byte[] imageBytes = Base64.getDecoder().decode(
+                                        imageBase64);
 
-                                (double) canvasSize /
-                                        originalImage.getHeight()
-                        );
+                        /*
+                         * Convert bytes into an image.
+                         */
+                        ByteArrayInputStream inputStream = new ByteArrayInputStream(
+                                        imageBytes);
 
-                int newWidth =
-                        (int) (
-                                originalImage.getWidth()
-                                        * scale
-                        );
+                        BufferedImage originalImage = ImageIO.read(inputStream);
 
-                int newHeight =
-                        (int) (
-                                originalImage.getHeight()
-                                        * scale
-                        );
+                        if (originalImage == null) {
 
-                /*
-                 * Center the image.
-                 */
-                int x =
-                        (canvasSize - newWidth) / 2;
+                                throw new RuntimeException(
+                                                "Unsupported image format.");
+                        }
 
-                int y =
-                        (canvasSize - newHeight) / 2;
+                        /*
+                         * Create our standard 256 x 256 icon.
+                         */
+                        int canvasSize = 256;
 
-                /*
-                 * Draw the resized image.
-                 */
-                graphics.drawImage(
-                        originalImage,
-                        x,
-                        y,
-                        newWidth,
-                        newHeight,
-                        null
-                );
+                        BufferedImage icon = new BufferedImage(
+                                        canvasSize,
+                                        canvasSize,
+                                        BufferedImage.TYPE_INT_ARGB);
 
-            } finally {
+                        Graphics2D graphics = icon.createGraphics();
 
-                graphics.dispose();
-            }
+                        try {
 
-            /*
-             * Create icons directory.
-             */
-            File iconsDirectory =
-                    new File(
-                            "src/main/resources/static/icons"
-                    );
+                                /*
+                                 * Transparent background.
+                                 */
+                                graphics.setComposite(
+                                                AlphaComposite.Clear);
 
-            if (!iconsDirectory.exists()) {
+                                graphics.fillRect(
+                                                0,
+                                                0,
+                                                canvasSize,
+                                                canvasSize);
 
-                iconsDirectory.mkdirs();
-            }
+                                graphics.setComposite(
+                                                AlphaComposite.SrcOver);
 
-            /*
-             * Create the final filename.
-             *
-             * Example:
-             *
-             * slot-3.png
-             */
-            File outputFile =
-                    new File(
-                            iconsDirectory,
-                            "slot-" +
-                                    slotNumber +
-                                    ".png"
-                    );
+                                /*
+                                 * High-quality image rendering.
+                                 */
+                                graphics.setRenderingHint(
+                                                RenderingHints.KEY_INTERPOLATION,
+                                                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-            /*
-             * Save as PNG.
-             */
-            ImageIO.write(
-                    icon,
-                    "png",
-                    outputFile
-            );
+                                graphics.setRenderingHint(
+                                                RenderingHints.KEY_RENDERING,
+                                                RenderingHints.VALUE_RENDER_QUALITY);
 
-            /*
-             * Store filename in database.
-             */
-            tile.setIcon(
-                    "slot-" +
-                            slotNumber +
-                            ".png"
-            );
+                                graphics.setRenderingHint(
+                                                RenderingHints.KEY_ANTIALIASING,
+                                                RenderingHints.VALUE_ANTIALIAS_ON);
 
-            /*
-             * Save tile.
-             */
-            return tileRepository.save(tile);
+                                /*
+                                 * Calculate the size while
+                                 * preserving the original
+                                 * aspect ratio.
+                                 */
+                                double scale = Math.min(
+                                                (double) canvasSize /
+                                                                originalImage.getWidth(),
 
-        } catch (Exception e) {
+                                                (double) canvasSize /
+                                                                originalImage.getHeight());
 
-            throw new RuntimeException(
-                    "Failed to save custom icon",
-                    e
-            );
+                                int newWidth = (int) (originalImage.getWidth()
+                                                * scale);
+
+                                int newHeight = (int) (originalImage.getHeight()
+                                                * scale);
+
+                                /*
+                                 * Center the image.
+                                 */
+                                int x = (canvasSize - newWidth) / 2;
+
+                                int y = (canvasSize - newHeight) / 2;
+
+                                /*
+                                 * Draw the resized image.
+                                 */
+                                graphics.drawImage(
+                                                originalImage,
+                                                x,
+                                                y,
+                                                newWidth,
+                                                newHeight,
+                                                null);
+
+                        } finally {
+
+                                graphics.dispose();
+                        }
+
+                        /*
+                         * Create icons directory.
+                         */
+                        File iconsDirectory = new File(
+                                        "data/icons");
+
+                        if (!iconsDirectory.exists()) {
+
+                                iconsDirectory.mkdirs();
+                        }
+
+                        /*
+                         * Create the final filename.
+                         *
+                         * Example:
+                         *
+                         * slot-3.png
+                         */
+                        File outputFile = new File(
+                                        iconsDirectory,
+                                        "slot-" +
+                                                        slotNumber +
+                                                        ".png");
+
+                        /*
+                         * Save as PNG.
+                         */
+                        ImageIO.write(
+                                        icon,
+                                        "png",
+                                        outputFile);
+
+                        /*
+                         * Store filename in database.
+                         */
+                        tile.setIcon(
+                                        "slot-" +
+                                                        slotNumber +
+                                                        ".png");
+
+                        /*
+                         * Save tile.
+                         */
+                        return tileRepository.save(tile);
+
+                } catch (Exception e) {
+
+                        throw new RuntimeException(
+                                        "Failed to save custom icon",
+                                        e);
+                }
         }
-    }
 }
-
