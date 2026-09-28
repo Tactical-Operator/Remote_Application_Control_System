@@ -272,4 +272,3 @@ Remove-Item `
 Write-Host ""
 Write-Host "Website icon created:"
 Write-Host $OutputPath
-
