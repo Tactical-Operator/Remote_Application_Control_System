@@ -1912,6 +1912,13 @@ async function saveWebsite() {
             parsedUrl.hostname;
 
 
+        /*
+         * Save website configuration.
+         *
+         * WebsiteSaveService waits for the
+         * PowerShell icon extraction process
+         * to finish before this request returns.
+         */
         const response =
             await fetch(
                 "/api/website/save",
@@ -1951,7 +1958,11 @@ async function saveWebsite() {
 
 
         /*
-         * Optional custom icon.
+         * Save optional custom icon.
+         *
+         * If the user selected a custom icon,
+         * it replaces the automatically
+         * extracted website icon.
          */
         const iconSaved =
             await saveCustomIconIfSelected();
@@ -1963,21 +1974,14 @@ async function saveWebsite() {
 
 
         /*
-         * Give website icon generation
-         * a moment before refreshing.
+         * Reload the tile configuration.
          */
-        await new Promise(
-            resolve =>
-                setTimeout(
-                    resolve,
-                    300
-                )
-        );
-
-
         await loadTiles();
 
 
+        /*
+         * Close Website modal.
+         */
         closeWebsite();
 
 
