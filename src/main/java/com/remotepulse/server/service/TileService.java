@@ -21,85 +21,169 @@ import java.util.*;
 //         MySQL
 
 @Service
-public class TileService{
+public class TileService {
 
-    private final TileRepository tileRepository;// every tile service object needds a tilerepository object to work
+    private final TileRepository tileRepository;
 
-    public TileService(TileRepository tileRepository){ // This is constructor dependency injection ie using tileRepository object 
-
+    // Constructor Dependency Injection
+    public TileService(TileRepository tileRepository) {
         this.tileRepository = tileRepository;
     }
 
-    public List<Tile> getAllTiles(){
+
+    /*
+     * Get all tiles.
+     */
+    public List<Tile> getAllTiles() {
+
         return tileRepository.findAll();
     }
 
-    public Tile getTile(Long id){
-        return tileRepository.findById(id).orElseThrow(()-> new RuntimeException("Tile Not Found"));
+
+    /*
+     * Get a tile using its DATABASE ID.
+     *
+     * Example:
+     * id = 15
+     */
+    public Tile getTile(Long id) {
+
+        return tileRepository
+                .findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Tile Not Found"
+                        )
+                );
     }
 
-    public Tile saveTile(Tile tile){
+
+    /*
+     * Get a tile using its REMOTE PULSE SLOT NUMBER.
+     *
+     * Example:
+     * slotNumber = 15
+     *
+     * This will be used by the Android app.
+     */
+    public Tile getTileBySlotNumber(
+            Integer slotNumber
+    ) {
+
+        return tileRepository
+                .findBySlotNumber(slotNumber)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Tile slot not found: "
+                                        + slotNumber
+                        )
+                );
+    }
+
+
+    /*
+     * Save a tile.
+     */
+    public Tile saveTile(Tile tile) {
+
         return tileRepository.save(tile);
     }
 
-    public Tile updateTile(Long id, Tile updatedTile){
 
-        Tile existingTile= tileRepository.findById(id)
-        .orElseThrow(()-> new RuntimeException("Tile not found"));
+    /*
+     * Update an existing tile.
+     */
+    public Tile updateTile(
+            Long id,
+            Tile updatedTile
+    ) {
 
-        existingTile.setName(updatedTile.getName());
-        existingTile.setType(updatedTile.getType());
-        existingTile.setTarget(updatedTile.getTarget());
-        existingTile.setIcon(updatedTile.getIcon());
+        Tile existingTile =
+                tileRepository
+                        .findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Tile not found"
+                                )
+                        );
 
-        return tileRepository.save(existingTile);
+        existingTile.setName(
+                updatedTile.getName()
+        );
+
+        existingTile.setType(
+                updatedTile.getType()
+        );
+
+        existingTile.setTarget(
+                updatedTile.getTarget()
+        );
+
+        existingTile.setIcon(
+                updatedTile.getIcon()
+        );
+
+        return tileRepository.save(
+                existingTile
+        );
     }
-    public Tile clearTile(Integer slotNumber) {
 
-    Tile tile =
-            tileRepository
-                    .findBySlotNumber(slotNumber)
-                    .orElseThrow(() ->
-                            new RuntimeException(
-                                    "Tile slot not found: "
-                                            + slotNumber
-                            )
+
+    /*
+     * Clear a tile's configuration.
+     *
+     * The slot itself remains in the database.
+     */
+    public Tile clearTile(
+            Integer slotNumber
+    ) {
+
+        Tile tile =
+                tileRepository
+                        .findBySlotNumber(slotNumber)
+                        .orElseThrow(() ->
+                                new RuntimeException(
+                                        "Tile slot not found: "
+                                                + slotNumber
+                                )
+                        );
+
+
+        /*
+         * Delete the physical runtime icon file.
+         */
+        if (tile.getIcon() != null) {
+
+            File iconFile =
+                    new File(
+                            "data/icons",
+                            tile.getIcon()
                     );
 
-    /*
-     * Delete the physical icon file.
-     */
-    if (tile.getIcon() != null) {
+            if (iconFile.exists()) {
 
-        File iconFile =
-                new File(
-                        "src/main/resources/static/icons",
-                        tile.getIcon()
+                boolean deleted =
+                        iconFile.delete();
+
+                System.out.println(
+                        "Icon deleted: "
+                                + deleted
                 );
-
-        if (iconFile.exists()) {
-
-            boolean deleted =
-                    iconFile.delete();
-
-            System.out.println(
-                    "Icon deleted: " + deleted
-            );
+            }
         }
+
+
+        /*
+         * Keep the slot itself.
+         *
+         * Only remove its configuration.
+         */
+        tile.setName(null);
+        tile.setType(null);
+        tile.setTarget(null);
+        tile.setIcon(null);
+
+
+        return tileRepository.save(tile);
     }
-
-
-    /*
-     * Keep the slot itself.
-     *
-     * Only remove its configuration.
-     */
-    tile.setName(null);
-    tile.setType(null);
-    tile.setTarget(null);
-    tile.setIcon(null);
-
-
-    return tileRepository.save(tile);
-}
 }

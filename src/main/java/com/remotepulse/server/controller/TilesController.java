@@ -6,6 +6,8 @@ import com.remotepulse.server.entity.Tile;
 import com.remotepulse.server.service.TileService;
 import com.remotepulse.server.service.TileLaunchService;
 
+import com.remotepulse.server.service.TileUpdateService;
+
 import java.util.List;
 
 @RestController
@@ -14,10 +16,13 @@ public class TilesController {
 
     private final TileService tileService;
     private final TileLaunchService tileLaunchService;
+    private final TileUpdateService tileUpdateService;
 
-    public TilesController(TileService tileService, TileLaunchService tileLaunchService) {
+    public TilesController(TileService tileService, TileLaunchService tileLaunchService,
+            TileUpdateService tileUpdateService) {
         this.tileService = tileService;
         this.tileLaunchService = tileLaunchService;
+        this.tileUpdateService = tileUpdateService;
     }
 
     // get all tiles
@@ -37,7 +42,17 @@ public class TilesController {
             @PathVariable Long id,
             @RequestBody Tile tile) {
 
-        return tileService.updateTile(id, tile);
+        Tile updatedTile = tileService.updateTile(
+                id,
+                tile);
+
+        /*
+         * Tell connected Android devices
+         * that tile configuration changed.
+         */
+        tileUpdateService.tilesChanged();
+
+        return updatedTile;
     }
 
     @PostMapping("/{id}/launch")
@@ -50,12 +65,44 @@ public class TilesController {
         return "Tile '" + tile.getName() + "' Launched Successfully";
     }
 
+    /*
+     * Launch a tile using its Remote Pulse slot number.
+     *
+     * This endpoint will be used by the Android app.
+     *
+     * Example:
+     * POST /api/tiles/slot/15/launch
+     */
+    @PostMapping("/slot/{slotNumber}/launch")
+    public String launchTileBySlot(
+            @PathVariable Integer slotNumber) {
+
+        Tile tile = tileService.getTileBySlotNumber(
+                slotNumber);
+
+        tileLaunchService.launch(tile);
+
+        return "Slot "
+                + slotNumber
+                + " ('"
+                + tile.getName()
+                + "') launched successfully";
+    }
+
     @DeleteMapping("/slot/{slotNumber}/configuration")
     public Tile clearTile(
             @PathVariable Integer slotNumber) {
 
-        return tileService.clearTile(
+        Tile clearedTile = tileService.clearTile(
                 slotNumber);
+
+        /*
+         * Tell connected Android devices
+         * that tile configuration changed.
+         */
+        tileUpdateService.tilesChanged();
+
+        return clearedTile;
     }
 
 }
