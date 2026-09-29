@@ -5,17 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Remote Pulse</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -38,10 +32,7 @@
          dynamically by JavaScript
          ========================= -->
 
-    <div
-        id="tile-container"
-        class="tile-container"
-    >
+    <div id="tile-container" class="tile-container">
     </div>
 
 
@@ -49,10 +40,7 @@
          Configuration Modal
          ========================= -->
 
-    <div
-        id="config-modal"
-        class="modal hidden"
-    >
+    <div id="config-modal" class="modal hidden">
 
         <div class="modal-content">
 
@@ -64,34 +52,26 @@
             </p>
 
 
-            <button
-                type="button"
-                id="installed-app-button"
-            >
+            <button type="button" id="installed-app-button">
                 Installed Application
             </button>
 
 
-            <button
-                type="button"
-                id="custom-app-button"
-            >
+            <button type="button" id="custom-app-button">
                 Custom App
             </button>
 
 
-            <button
-                type="button"
-                id="website-button"
-            >
+            <button type="button" id="website-button">
                 Website
             </button>
 
+            <button type="button" id="system-button-button">
+                System Button
+            </button>
 
-            <button
-                type="button"
-                id="change-icon-button"
-            >
+
+            <button type="button" id="change-icon-button">
                 Change Icon
             </button>
 
@@ -108,19 +88,12 @@
                 - Custom Icon
             -->
 
-            <button
-                type="button"
-                id="delete-configuration-button"
-                class="hidden"
-            >
+            <button type="button" id="delete-configuration-button" class="hidden">
                 Delete Configuration
             </button>
 
 
-            <button
-                type="button"
-                id="config-cancel-button"
-            >
+            <button type="button" id="config-cancel-button">
                 Cancel
             </button>
 
@@ -133,10 +106,7 @@
          Delete Configuration Modal
          ========================= -->
 
-    <div
-        id="delete-configuration-modal"
-        class="modal hidden"
-    >
+    <div id="delete-configuration-modal" class="modal hidden">
 
         <div class="modal-content">
 
@@ -154,18 +124,12 @@
             </p>
 
 
-            <button
-                type="button"
-                id="delete-configuration-yes-button"
-            >
+            <button type="button" id="delete-configuration-yes-button">
                 Yes
             </button>
 
 
-            <button
-                type="button"
-                id="delete-configuration-no-button"
-            >
+            <button type="button" id="delete-configuration-no-button">
                 No
             </button>
 
@@ -178,10 +142,7 @@
          Change Icon Modal
          ========================= -->
 
-    <div
-        id="change-icon-modal"
-        class="modal hidden"
-    >
+    <div id="change-icon-modal" class="modal hidden">
 
         <div class="modal-content">
 
@@ -199,25 +160,15 @@
             </label>
 
 
-            <input
-                type="file"
-                id="change-icon-file"
-                accept=".png,.jpg,.jpeg"
-            >
+            <input type="file" id="change-icon-file" accept=".png,.jpg,.jpeg">
 
 
-            <button
-                type="button"
-                id="change-icon-save-button"
-            >
+            <button type="button" id="change-icon-save-button">
                 Save
             </button>
 
 
-            <button
-                type="button"
-                id="change-icon-close-button"
-            >
+            <button type="button" id="change-icon-close-button">
                 Cancel
             </button>
 
@@ -230,14 +181,9 @@
          Installed Applications Modal
          ========================= -->
 
-    <div
-        id="installed-app-modal"
-        class="modal hidden"
-    >
+    <div id="installed-app-modal" class="modal hidden">
 
-        <div
-            class="modal-content installed-app-content"
-        >
+        <div class="modal-content installed-app-content">
 
             <h2>
                 Installed Applications
@@ -248,18 +194,10 @@
             </p>
 
 
-            <input
-                type="text"
-                id="installed-app-search"
-                placeholder="Search applications..."
-                autocomplete="off"
-            >
+            <input type="text" id="installed-app-search" placeholder="Search applications..." autocomplete="off">
 
 
-            <div
-                id="installed-app-list"
-                class="installed-app-list"
-            >
+            <div id="installed-app-list" class="installed-app-list">
             </div>
 
 
@@ -273,25 +211,15 @@
             </label>
 
 
-            <input
-                type="file"
-                id="installed-app-custom-icon"
-                accept=".png,.jpg,.jpeg"
-            >
+            <input type="file" id="installed-app-custom-icon" accept=".png,.jpg,.jpeg">
 
 
-            <button
-                type="button"
-                id="installed-app-save-button"
-            >
+            <button type="button" id="installed-app-save-button">
                 Save
             </button>
 
 
-            <button
-                type="button"
-                id="installed-app-close-button"
-            >
+            <button type="button" id="installed-app-close-button">
                 Cancel
             </button>
 
@@ -304,14 +232,9 @@
          Custom Application Modal
          ========================= -->
 
-    <div
-        id="custom-app-modal"
-        class="modal hidden"
-    >
+    <div id="custom-app-modal" class="modal hidden">
 
-        <div
-            class="modal-content custom-app-content"
-        >
+        <div class="modal-content custom-app-content">
 
             <h2>
                 Custom Application
@@ -327,12 +250,7 @@
             </label>
 
 
-            <input
-                type="text"
-                id="custom-app-path"
-                placeholder="Paste EXE path here..."
-                autocomplete="off"
-            >
+            <input type="text" id="custom-app-path" placeholder="Paste EXE path here..." autocomplete="off">
 
 
             <p id="custom-app-name">
@@ -345,25 +263,15 @@
             </label>
 
 
-            <input
-                type="file"
-                id="custom-app-custom-icon"
-                accept=".png,.jpg,.jpeg"
-            >
+            <input type="file" id="custom-app-custom-icon" accept=".png,.jpg,.jpeg">
 
 
-            <button
-                type="button"
-                id="custom-app-save-button"
-            >
+            <button type="button" id="custom-app-save-button">
                 Save
             </button>
 
 
-            <button
-                type="button"
-                id="custom-app-close-button"
-            >
+            <button type="button" id="custom-app-close-button">
                 Cancel
             </button>
 
@@ -376,14 +284,9 @@
          Website Modal
          ========================= -->
 
-    <div
-        id="website-modal"
-        class="modal hidden"
-    >
+    <div id="website-modal" class="modal hidden">
 
-        <div
-            class="modal-content website-content"
-        >
+        <div class="modal-content website-content">
 
             <h2>
                 Website Configuration
@@ -399,12 +302,7 @@
             </label>
 
 
-            <input
-                type="text"
-                id="website-url"
-                placeholder="https://example.com"
-                autocomplete="off"
-            >
+            <input type="text" id="website-url" placeholder="https://example.com" autocomplete="off">
 
 
             <p id="website-name">
@@ -417,25 +315,64 @@
             </label>
 
 
-            <input
-                type="file"
-                id="website-custom-icon"
-                accept=".png,.jpg,.jpeg"
-            >
+            <input type="file" id="website-custom-icon" accept=".png,.jpg,.jpeg">
 
 
-            <button
-                type="button"
-                id="website-save-button"
-            >
+            <button type="button" id="website-save-button">
                 Save
             </button>
 
 
-            <button
-                type="button"
-                id="website-close-button"
-            >
+            <button type="button" id="website-close-button">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- =========================
+     System Button Modal
+     ========================= -->
+
+    <div id="system-button-modal" class="modal hidden">
+
+        <div class="modal-content">
+
+            <h2>
+                System Button
+            </h2>
+
+            <p id="system-button-slot">
+            </p>
+
+
+            <button type="button" class="system-button-option" data-action="MIC_TOGGLE">
+                Microphone
+            </button>
+
+
+            <button type="button" class="system-button-option" data-action="VOLUME_UP">
+                Volume Up
+            </button>
+
+
+            <button type="button" class="system-button-option" data-action="VOLUME_DOWN">
+                Volume Down
+            </button>
+
+
+            <button type="button" class="system-button-option" data-action="MUTE_TOGGLE">
+                Mute
+            </button>
+
+
+            <button type="button" class="system-button-option" data-action="MEDIA_PLAY_PAUSE">
+                Play / Pause
+            </button>
+
+
+            <button type="button" id="system-button-close-button">
                 Cancel
             </button>
 

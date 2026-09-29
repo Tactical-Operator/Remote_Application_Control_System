@@ -260,9 +260,30 @@ function displayTiles(tiles) {
              * Chrome from displaying an old
              * cached slot-X.png.
              */
-            const iconUrl =
-                `/icons/${tile.icon}` +
-                `?v=${Date.now()}-${Math.random()}`;
+            let iconUrl;
+
+            if (
+                tile.icon.startsWith(
+                    "system-icons/"
+                )
+            ) {
+
+                /*
+                 * Built-in Remote Pulse icon.
+                 */
+                iconUrl =
+                    `/${tile.icon}` +
+                    `?v=${Date.now()}`;
+
+            } else {
+
+                /*
+                 * Runtime/user-generated icon.
+                 */
+                iconUrl =
+                    `/icons/${tile.icon}` +
+                    `?v=${Date.now()}-${Math.random()}`;
+            }
 
 
             icon.onload =
@@ -431,6 +452,138 @@ function closeConfiguration() {
         "hidden"
     );
 
+
+    selectedSlot =
+        null;
+}
+/*
+ * =====================================================
+ * System Button
+ * =====================================================
+ */
+
+/*
+ * Open System Button modal.
+ */
+function openSystemButton() {
+
+    if (selectedSlot === null) {
+        return;
+    }
+
+    document.getElementById(
+        "system-button-slot"
+    ).textContent =
+        `Slot ${selectedSlot}`;
+
+
+    /*
+     * Hide main configuration modal.
+     */
+    document.getElementById(
+        "config-modal"
+    ).classList.add(
+        "hidden"
+    );
+
+
+    /*
+     * Show System Button modal.
+     */
+    document.getElementById(
+        "system-button-modal"
+    ).classList.remove(
+        "hidden"
+    );
+}
+
+/*
+ * Save a System Button configuration.
+ */
+async function saveSystemButton(action) {
+
+    if (selectedSlot === null) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/system-button/save",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        slotNumber:
+                            selectedSlot,
+
+                        action:
+                            action
+                    })
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            throw new Error(
+                errorText
+            );
+        }
+
+
+        /*
+         * Reload tiles from database.
+         */
+        await loadTiles();
+
+
+        /*
+         * Close System Button modal.
+         */
+        document.getElementById(
+            "system-button-modal"
+        ).classList.add(
+            "hidden"
+        );
+
+
+        selectedSlot =
+            null;
+
+
+    } catch (error) {
+
+        console.error(
+            "Failed to save system button:",
+            error
+        );
+
+        alert(
+            "Failed to save system button."
+        );
+    }
+}
+
+/*
+ * Close System Button modal.
+ */
+function closeSystemButton() {
+
+    document.getElementById(
+        "system-button-modal"
+    ).classList.add(
+        "hidden"
+    );
 
     selectedSlot =
         null;
@@ -2067,6 +2220,55 @@ document
     .addEventListener(
         "click",
         openWebsite
+    );
+
+/*
+* System Button.
+*/
+document
+    .getElementById(
+        "system-button-button"
+    )
+    .addEventListener(
+        "click",
+        openSystemButton
+    );
+
+/*
+* System Button action options.
+*/
+document
+    .querySelectorAll(
+        ".system-button-option"
+    )
+    .forEach(
+        button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const action =
+                        button.dataset.action;
+
+                    saveSystemButton(
+                        action
+                    );
+                }
+            );
+        }
+    );
+
+/*
+* Cancel System Button.
+*/
+document
+    .getElementById(
+        "system-button-close-button"
+    )
+    .addEventListener(
+        "click",
+        closeSystemButton
     );
 
 
