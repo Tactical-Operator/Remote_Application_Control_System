@@ -6,6 +6,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class TileLaunchService {
 
+    private final SystemButtonService systemButtonService;
+
+    public TileLaunchService(
+            SystemButtonService systemButtonService) {
+        this.systemButtonService = systemButtonService;
+    }
+
     public void launch(Tile tile) {
 
         try {
@@ -34,13 +41,20 @@ public class TileLaunchService {
                         "explorer.exe",
                         "shell:AppsFolder\\" + tile.getTarget()).start();
 
+            } else if (tile.getType().equals("SYSTEM_BUTTON")) {
+
+                systemButtonService.execute(
+                        tile.getTarget());
+
             } else {
 
                 throw new RuntimeException(
                         "Unknown tile type: " + tile.getType());
             }
 
-        } catch (Exception e) {
+        } catch (
+
+        Exception e) {
 
             throw new RuntimeException(
                     "Failed to launch tile",
