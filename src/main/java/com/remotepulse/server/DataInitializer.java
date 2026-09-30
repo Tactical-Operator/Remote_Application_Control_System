@@ -17,7 +17,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        for (int i = 1; i <= 15; i++) {
+        for (int i = 1; i <= 18; i++) {
 
             if (tileRepository.findBySlotNumber(i).isEmpty()) {
 
