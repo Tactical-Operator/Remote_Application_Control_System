@@ -44,6 +44,82 @@ PS C:\Users\Admin> cmd /c start "" "shell:AppsFolder\paste the AppId"
 
 
 
+LInks with problems 
+
+https://web.whatsapp.com/
+
+https://www.instagram.com/?hl=en
+
+https://www.instagram.com
+
+https://www.topps.com/
+
+
+
+What was the bug?
+The main symptom was specifically with Website configuration.
+For example:
+Slot 7 = GitHub
+        ↓
+Change website to YouTube
+        ↓
+Backend correctly updates tile
+        ↓
+New YouTube icon gets generated
+        ↓
+Frontend reloads
+        ↓
+But old GitHub icon / broken icon remains ❌
+        ↓
+F5
+        ↓
+YouTube icon appears ✅
+
+The important discovery was that the frontend wasn't fundamentally the problem. We tried reloads/cache-busting/timing approaches, but the real architectural issue was where dynamically generated icons were being stored.
+We were writing runtime-generated files here:
+src/main/resources/static/icons/
+
+But src/main/resources is meant for application resources that are packaged with the application. During development, Spring/Maven also has resources under the build/classpath area, such as:
+target/classes/static/icons/
+
+So modifying a source resource at runtime could leave us in an awkward situation where the file on disk had changed, while the resource being served by the running application wasn't reliably synchronized at exactly the moment the browser requested it.
+That explained the strange behavior we observed: the database was correct, the generated PNG could be correct, directly opening it later could show the correct image, and a later redraw/refresh could work — while the immediate tile image request could still fail or show stale content.
+How we fixed it
+Instead of treating user-generated icons as Spring static source resources, we created a dedicated runtime data directory:
+data/
+└── icons/
+    ├── slot-1.png
+    ├── slot-2.png
+    ├── slot-3.png
+    └── ...
+
+Then we added WebConfig.java, which explicitly maps:
+/icons/**
+       ↓
+data/icons/
+
+So when the frontend requests:
+/icons/slot-7.png
+
+Spring now serves the actual runtime file:
+data/icons/slot-7.png
+
+No src → target/classes → running application resource-copying path is involved.
+We then migrated all four icon-producing flows to the same directory:
+Website configuration ──────┐
+Installed App configuration ┤
+Custom App configuration ───┼──→ data/icons/slot-X.png
+Change Icon ────────────────┘
+                                    ↓
+                              WebConfig
+                                    ↓
+                               /icons/**
+                                    ↓
+                                Frontend
+
+And you've now verified all four are working. ✅
+This is also a better architecture for the future .exe version of Remote Pulse: program resources/code stay packaged with the application, while user-generated data lives outside the packaged application in a writable runtime directory.
+
 
 
 
