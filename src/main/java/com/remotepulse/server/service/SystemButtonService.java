@@ -10,10 +10,15 @@ public class SystemButtonService {
 
     private interface User32 extends Library {
 
-    User32 INSTANCE = Native.load("user32", User32.class);
+        User32 INSTANCE = Native.load("user32", User32.class);
 
-    void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
-}
+        void keybd_event(
+                byte bVk,
+                byte bScan,
+                int dwFlags,
+                int dwExtraInfo
+        );
+    }
 
 
     public void execute(String action) {
@@ -24,12 +29,14 @@ public class SystemButtonService {
 
             return;
         }
+
         if ("VOLUME_DOWN".equals(action)) {
 
             volumeDown();
 
             return;
         }
+
         if ("MUTE_TOGGLE".equals(action)) {
 
             muteToggle();
@@ -44,87 +51,148 @@ public class SystemButtonService {
             return;
         }
 
+        if ("PRINT_SCREEN".equals(action)) {
+
+            printScreen();
+
+            return;
+        }
+
+        if ("FULLSCREEN".equals(action)) {
+
+            fullscreen();
+
+            return;
+        }
+
         throw new IllegalArgumentException(
-                "Unsupported system action: " + action);
+                "Unsupported system action: " + action
+        );
     }
+
 
     private void volumeUp() {
 
-    byte VK_VOLUME_UP = (byte) 0xAF;
-    int KEYEVENTF_KEYUP = 0x0002;
+        byte VK_VOLUME_UP = (byte) 0xAF;
+        int KEYEVENTF_KEYUP = 0x0002;
 
-    User32.INSTANCE.keybd_event(
-            VK_VOLUME_UP,
-            (byte) 0,
-            0,
-            0
-    );
+        User32.INSTANCE.keybd_event(
+                VK_VOLUME_UP,
+                (byte) 0,
+                0,
+                0
+        );
 
-    User32.INSTANCE.keybd_event(
-            VK_VOLUME_UP,
-            (byte) 0,
-            KEYEVENTF_KEYUP,
-            0
-    );
-}
+        User32.INSTANCE.keybd_event(
+                VK_VOLUME_UP,
+                (byte) 0,
+                KEYEVENTF_KEYUP,
+                0
+        );
+    }
+
 
     private void volumeDown() {
 
-    byte VK_VOLUME_DOWN = (byte) 0xAE;
-    int KEYEVENTF_KEYUP = 0x0002;
+        byte VK_VOLUME_DOWN = (byte) 0xAE;
+        int KEYEVENTF_KEYUP = 0x0002;
 
-    User32.INSTANCE.keybd_event(
-            VK_VOLUME_DOWN,
-            (byte) 0,
-            0,
-            0
-    );
+        User32.INSTANCE.keybd_event(
+                VK_VOLUME_DOWN,
+                (byte) 0,
+                0,
+                0
+        );
 
-    User32.INSTANCE.keybd_event(
-            VK_VOLUME_DOWN,
-            (byte) 0,
-            KEYEVENTF_KEYUP,
-            0
-    );
-}
+        User32.INSTANCE.keybd_event(
+                VK_VOLUME_DOWN,
+                (byte) 0,
+                KEYEVENTF_KEYUP,
+                0
+        );
+    }
 
-private void muteToggle() {
 
-    byte VK_VOLUME_MUTE = (byte) 0xAD;
-    int KEYEVENTF_KEYUP = 0x0002;
+    private void muteToggle() {
 
-    User32.INSTANCE.keybd_event(
-            VK_VOLUME_MUTE,
-            (byte) 0,
-            0,
-            0
-    );
+        byte VK_VOLUME_MUTE = (byte) 0xAD;
+        int KEYEVENTF_KEYUP = 0x0002;
 
-    User32.INSTANCE.keybd_event(
-            VK_VOLUME_MUTE,
-            (byte) 0,
-            KEYEVENTF_KEYUP,
-            0
-    );
-}
+        User32.INSTANCE.keybd_event(
+                VK_VOLUME_MUTE,
+                (byte) 0,
+                0,
+                0
+        );
 
-private void mediaPlayPause() {
+        User32.INSTANCE.keybd_event(
+                VK_VOLUME_MUTE,
+                (byte) 0,
+                KEYEVENTF_KEYUP,
+                0
+        );
+    }
 
-    byte VK_MEDIA_PLAY_PAUSE = (byte) 0xB3;
-    int KEYEVENTF_KEYUP = 0x0002;
 
-    User32.INSTANCE.keybd_event(
-            VK_MEDIA_PLAY_PAUSE,
-            (byte) 0,
-            0,
-            0
-    );
+    private void mediaPlayPause() {
 
-    User32.INSTANCE.keybd_event(
-            VK_MEDIA_PLAY_PAUSE,
-            (byte) 0,
-            KEYEVENTF_KEYUP,
-            0
-    );
-}
+        byte VK_MEDIA_PLAY_PAUSE = (byte) 0xB3;
+        int KEYEVENTF_KEYUP = 0x0002;
+
+        User32.INSTANCE.keybd_event(
+                VK_MEDIA_PLAY_PAUSE,
+                (byte) 0,
+                0,
+                0
+        );
+
+        User32.INSTANCE.keybd_event(
+                VK_MEDIA_PLAY_PAUSE,
+                (byte) 0,
+                KEYEVENTF_KEYUP,
+                0
+        );
+    }
+
+
+    private void printScreen() {
+
+        byte VK_SNAPSHOT = (byte) 0x2C;
+        int KEYEVENTF_KEYUP = 0x0002;
+
+        User32.INSTANCE.keybd_event(
+                VK_SNAPSHOT,
+                (byte) 0,
+                0,
+                0
+        );
+
+        User32.INSTANCE.keybd_event(
+                VK_SNAPSHOT,
+                (byte) 0,
+                KEYEVENTF_KEYUP,
+                0
+        );
+    }
+
+
+    private void fullscreen() {
+
+        byte VK_F11 = (byte) 0x7A;
+        int KEYEVENTF_KEYUP = 0x0002;
+
+        User32.INSTANCE.keybd_event(
+                VK_F11,
+                (byte) 0,
+                0,
+                0
+        );
+
+        User32.INSTANCE.keybd_event(
+                VK_F11,
+                (byte) 0,
+                KEYEVENTF_KEYUP,
+                0
+        );
+    }
 }
