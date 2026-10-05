@@ -17,7 +17,9 @@ public class SystemButtonSaveService {
                     "VOLUME_UP", "Volume Up",
                     "VOLUME_DOWN", "Volume Down",
                     "MUTE_TOGGLE", "Mute",
-                    "MEDIA_PLAY_PAUSE", "Media Play/Pause"
+                    "MEDIA_PLAY_PAUSE", "Media Play/Pause",
+                    "PRINT_SCREEN", "Print Screen",
+                    "FULLSCREEN", "Fullscreen"
             );
 
     private static final Map<String, String> BUTTON_ICONS =
@@ -26,7 +28,9 @@ public class SystemButtonSaveService {
                     "VOLUME_UP", "system-icons/volume-up.png",
                     "VOLUME_DOWN", "system-icons/volume-down.png",
                     "MUTE_TOGGLE", "system-icons/mute.png",
-                    "MEDIA_PLAY_PAUSE", "system-icons/play-pause.png"
+                    "MEDIA_PLAY_PAUSE", "system-icons/play-pause.png",
+                    "PRINT_SCREEN", "system-icons/printscreen.png",
+                    "FULLSCREEN", "system-icons/fullscreen.png"
             );
 
     public SystemButtonSaveService(
