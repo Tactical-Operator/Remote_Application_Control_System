@@ -2,8 +2,19 @@ package com.remotepulse.server.service;
 
 import org.springframework.stereotype.Service;
 
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+
 @Service
 public class SystemButtonService {
+
+    private interface User32 extends Library {
+
+    User32 INSTANCE = Native.load("user32", User32.class);
+
+    void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+}
+
 
     public void execute(String action) {
 
@@ -39,85 +50,81 @@ public class SystemButtonService {
 
     private void volumeUp() {
 
-        try {
+    byte VK_VOLUME_UP = (byte) 0xAF;
+    int KEYEVENTF_KEYUP = 0x0002;
 
-            new ProcessBuilder(
-                    "powershell.exe",
-                    "-NoProfile",
-                    "-Command",
-                    "$wshell = New-Object -ComObject WScript.Shell; " +
-                            "$wshell.SendKeys([char]175)")
-                    .start()
-                    .waitFor();
+    User32.INSTANCE.keybd_event(
+            VK_VOLUME_UP,
+            (byte) 0,
+            0,
+            0
+    );
 
-        } catch (Exception e) {
-
-            throw new RuntimeException(
-                    "Failed to increase system volume",
-                    e);
-        }
-    }
+    User32.INSTANCE.keybd_event(
+            VK_VOLUME_UP,
+            (byte) 0,
+            KEYEVENTF_KEYUP,
+            0
+    );
+}
 
     private void volumeDown() {
 
-        try {
+    byte VK_VOLUME_DOWN = (byte) 0xAE;
+    int KEYEVENTF_KEYUP = 0x0002;
 
-            new ProcessBuilder(
-                    "powershell.exe",
-                    "-NoProfile",
-                    "-Command",
-                    "$wshell = New-Object -ComObject WScript.Shell; " +
-                            "$wshell.SendKeys([char]174)")
-                    .start()
-                    .waitFor();
+    User32.INSTANCE.keybd_event(
+            VK_VOLUME_DOWN,
+            (byte) 0,
+            0,
+            0
+    );
 
-        } catch (Exception e) {
+    User32.INSTANCE.keybd_event(
+            VK_VOLUME_DOWN,
+            (byte) 0,
+            KEYEVENTF_KEYUP,
+            0
+    );
+}
 
-            throw new RuntimeException(
-                    "Failed to decrease system volume",
-                    e);
-        }
-    }
+private void muteToggle() {
 
-    private void muteToggle() {
+    byte VK_VOLUME_MUTE = (byte) 0xAD;
+    int KEYEVENTF_KEYUP = 0x0002;
 
-        try {
+    User32.INSTANCE.keybd_event(
+            VK_VOLUME_MUTE,
+            (byte) 0,
+            0,
+            0
+    );
 
-            new ProcessBuilder(
-                    "powershell.exe",
-                    "-NoProfile",
-                    "-Command",
-                    "$wshell = New-Object -ComObject WScript.Shell; " +
-                            "$wshell.SendKeys([char]173)")
-                    .start()
-                    .waitFor();
+    User32.INSTANCE.keybd_event(
+            VK_VOLUME_MUTE,
+            (byte) 0,
+            KEYEVENTF_KEYUP,
+            0
+    );
+}
 
-        } catch (Exception e) {
+private void mediaPlayPause() {
 
-            throw new RuntimeException(
-                    "Failed to toggle system mute",
-                    e);
-        }
-    }
+    byte VK_MEDIA_PLAY_PAUSE = (byte) 0xB3;
+    int KEYEVENTF_KEYUP = 0x0002;
 
-    private void mediaPlayPause() {
+    User32.INSTANCE.keybd_event(
+            VK_MEDIA_PLAY_PAUSE,
+            (byte) 0,
+            0,
+            0
+    );
 
-        try {
-
-            new ProcessBuilder(
-                    "powershell.exe",
-                    "-NoProfile",
-                    "-Command",
-                    "$wshell = New-Object -ComObject WScript.Shell; " +
-                            "$wshell.SendKeys([char]179)")
-                    .start()
-                    .waitFor();
-
-        } catch (Exception e) {
-
-            throw new RuntimeException(
-                    "Failed to toggle media play/pause",
-                    e);
-        }
-    }
+    User32.INSTANCE.keybd_event(
+            VK_MEDIA_PLAY_PAUSE,
+            (byte) 0,
+            KEYEVENTF_KEYUP,
+            0
+    );
+}
 }
