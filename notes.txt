@@ -120,6 +120,9 @@ Change Icon ────────────────┘
 And you've now verified all four are working. ✅
 This is also a better architecture for the future .exe version of Remote Pulse: program resources/code stay packaged with the application, while user-generated data lives outside the packaged application in a writable runtime directory.
 
+issue has been solved.
+
+
 
 
 
