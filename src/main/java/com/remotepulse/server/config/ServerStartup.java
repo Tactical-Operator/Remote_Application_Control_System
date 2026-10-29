@@ -1,3 +1,4 @@
+
 package com.remotepulse.server.config;
 
 import com.remotepulse.server.service.ServerNetworkService;
@@ -15,22 +16,19 @@ public class ServerStartup {
 
     private final ServerNetworkService serverNetworkService;
 
-    public ServerStartup(
-            ServerNetworkService serverNetworkService) {
-
+    public ServerStartup(ServerNetworkService serverNetworkService) {
         this.serverNetworkService = serverNetworkService;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
-
         String ipAddress = serverNetworkService.findLocalIpAddress();
 
-        String url = "http://" +
-                ipAddress +
-                ":" +
-                serverPort +
-                "/index.html";
+        String url = "http://"
+                + ipAddress
+                + ":"
+                + serverPort
+                + "/index.html";
 
         System.out.println();
 
@@ -40,8 +38,7 @@ public class ServerStartup {
 
         System.out.println();
 
-        System.out.println(
-                "The configuration page is available at:");
+        System.out.println("The configuration page is available at:");
 
         System.out.println();
 
@@ -49,8 +46,7 @@ public class ServerStartup {
 
         System.out.println();
 
-        System.out.println(
-                "Opening configuration page in browser...");
+        System.out.println("Opening configuration page in browser...");
 
         System.out.println();
 
@@ -60,24 +56,18 @@ public class ServerStartup {
     }
 
     private void openBrowser(String url) {
+        try {
+            new ProcessBuilder(
+                    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                    "--new-window",
+                    "--window-size=516,914",
+                    "--window-position=100,50",
+                    url
+            ).start();
 
-    try {
-
-        new ProcessBuilder(
-                "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-                "--new-window",
-                "--window-size=516,914",
-                "--window-position=100,50",
-                url
-        ).start();
-
-    } catch (Exception e) {
-
-        System.out.println(
-                "Could not open Chrome automatically."
-        );
-
-        e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("Could not open Chrome automatically.");
+            e.printStackTrace();
+        }
     }
-}
 }
