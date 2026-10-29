@@ -9,26 +9,21 @@ import java.nio.file.Path;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addResourceHandlers(
-            ResourceHandlerRegistry registry
-    ) {
+        @Override
+        public void addResourceHandlers(
+                        ResourceHandlerRegistry registry) {
 
-        String iconLocation =
-                Path.of(
-                        "data",
-                        "icons"
-                )
-                .toAbsolutePath()
-                .toUri()
-                .toString();
+                String iconLocation = Path.of(
+                                "data",
+                                "icons")
+                                .toAbsolutePath()
+                                .toUri()
+                                .toString();
 
-        registry
-                .addResourceHandler(
-                        "/icons/**"
-                )
-                .addResourceLocations(
-                        iconLocation
-                );
-    }
+                registry
+                                .addResourceHandler(
+                                                "/icons/**")
+                                .addResourceLocations(
+                                                iconLocation);
+        }
 }
