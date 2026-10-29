@@ -11,12 +11,11 @@ import com.remotepulse.server.service.TileService;
 import com.remotepulse.server.service.TileUpdateService;
 
 /**
- * Responsibility:
- * Handles REST API requests for retrieving, updating, launching,
- * and clearing Remote Pulse tiles.
+ * Handles REST API requests for Remote Pulse tile operations.
  *
- * Delegates tile operations to the appropriate service classes
- * and notifies connected Android devices when configurations change.
+ * Supports retrieving, updating, launching, and clearing tiles.
+ * Delegates business logic to the appropriate service classes
+ * and notifies connected Android clients when configurations change.
  */
 @RestController
 @RequestMapping("/api/tiles")
@@ -26,19 +25,29 @@ public class TilesController {
     private final TileLaunchService tileLaunchService;
     private final TileUpdateService tileUpdateService;
 
+    /**
+     * Injects the services required to manage and launch tiles.
+     *
+     * @param tileService handles tile data operations
+     * @param tileLaunchService executes tile actions
+     * @param tileUpdateService sends tile-change notifications
+     */
     public TilesController(
             TileService tileService,
             TileLaunchService tileLaunchService,
             TileUpdateService tileUpdateService) {
+
         this.tileService = tileService;
         this.tileLaunchService = tileLaunchService;
         this.tileUpdateService = tileUpdateService;
     }
 
     /**
-     * Retrieves all configured tiles.
+     * Retrieves all tile records.
      *
      * GET /api/tiles
+     *
+     * @return list of tiles
      */
     @GetMapping
     public List<Tile> getAllTiles() {
@@ -49,6 +58,9 @@ public class TilesController {
      * Retrieves a tile using its database ID.
      *
      * GET /api/tiles/{id}
+     *
+     * @param id the database ID of the tile
+     * @return the requested tile
      */
     @GetMapping("/{id}")
     public Tile getTile(@PathVariable Long id) {
@@ -56,10 +68,14 @@ public class TilesController {
     }
 
     /**
-     * Updates a tile and notifies connected Android devices
-     * that the configuration has changed.
+     * Updates a tile's configuration and notifies connected
+     * Android clients about the change.
      *
      * PUT /api/tiles/{id}
+     *
+     * @param id the database ID of the tile to update
+     * @param tile the updated tile data from the request body
+     * @return the updated tile
      */
     @PutMapping("/{id}")
     public Tile updateTile(
@@ -68,7 +84,7 @@ public class TilesController {
 
         Tile updatedTile = tileService.updateTile(id, tile);
 
-        // Notify connected Android devices about the change.
+        // Notify the connected Android client that tiles have changed.
         tileUpdateService.tilesChanged();
 
         return updatedTile;
@@ -78,11 +94,16 @@ public class TilesController {
      * Launches a tile using its database ID.
      *
      * POST /api/tiles/{id}/launch
+     *
+     * @param id the database ID of the tile to launch
+     * @return a success message containing the tile name
      */
     @PostMapping("/{id}/launch")
     public String launchTile(@PathVariable Long id) {
+
         Tile tile = tileService.getTile(id);
 
+        // Delegate the actual launch operation to the launch service.
         tileLaunchService.launch(tile);
 
         return "Tile '" + tile.getName() + "' Launched Successfully";
@@ -90,9 +111,14 @@ public class TilesController {
 
     /**
      * Launches a tile using its Remote Pulse slot number.
-     * This endpoint is used by the Android app.
      *
-     * Example: POST /api/tiles/slot/15/launch
+     * POST /api/tiles/slot/{slotNumber}/launch
+     *
+     * This endpoint is used by the Android app to launch
+     * the tile associated with a particular slot.
+     *
+     * @param slotNumber the Remote Pulse slot number
+     * @return a success message containing the slot and tile name
      */
     @PostMapping("/slot/{slotNumber}/launch")
     public String launchTileBySlot(
@@ -100,6 +126,7 @@ public class TilesController {
 
         Tile tile = tileService.getTileBySlotNumber(slotNumber);
 
+        // Execute the action configured for this tile.
         tileLaunchService.launch(tile);
 
         return "Slot "
@@ -110,16 +137,19 @@ public class TilesController {
     }
 
     /**
-     * Clears a tile's configuration while preserving its slot,
-     * then notifies connected Android devices about the change.
+     * Clears a tile's configuration while preserving its slot.
      *
      * DELETE /api/tiles/slot/{slotNumber}/configuration
+     *
+     * @param slotNumber the slot whose configuration should be cleared
+     * @return the tile with its configuration cleared
      */
     @DeleteMapping("/slot/{slotNumber}/configuration")
     public Tile clearTile(@PathVariable Integer slotNumber) {
+
         Tile clearedTile = tileService.clearTile(slotNumber);
 
-        // Notify connected Android devices about the change.
+        // Notify the connected Android client about the change.
         tileUpdateService.tilesChanged();
 
         return clearedTile;

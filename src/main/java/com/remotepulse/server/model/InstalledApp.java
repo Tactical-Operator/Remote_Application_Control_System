@@ -1,57 +1,56 @@
+
 package com.remotepulse.server.model;
 
+/**
+ * Represents an application discovered on the Windows system.
+ *
+ * Used to store an application's display name and unique application ID.
+ * This information is used by Remote Pulse to identify installed apps
+ * and configure them as tiles that can be launched from the client.
+ */
 public class InstalledApp {
 
+    // Application name displayed to the user.
     private String name;
+
+    // Unique identifier used to launch the application.
     private String appId;
 
-    public InstalledApp(){
-
+    /**
+     * No-argument constructor used when creating the object without
+     * providing values immediately.
+     */
+    public InstalledApp() {
     }
 
-    public InstalledApp(String name, String appId)
-    {
+    /**
+     * Creates an InstalledApp object with its name and application ID.
+     *
+     * @param name  the application's display name
+     * @param appId the application's unique identifier
+     */
+    public InstalledApp(String name, String appId) {
         this.name = name;
         this.appId = appId;
     }
 
-    public String getName(){
+    // Returns the application's display name.
+    public String getName() {
         return name;
     }
 
-    public void setName(String name){
+    // Updates the application's display name.
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getAppId(){
+    // Returns the application's unique identifier.
+    public String getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId){
+    // Updates the application's unique identifier.
+    public void setAppId(String appId) {
         this.appId = appId;
     }
-    
 }
-
-// What this class represents
-
-// It represents one application returned by Windows.
-
-// For example, after Windows gives us:
-
-// WhatsApp
-// 5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App
-
-// Java will represent it as:
-
-// InstalledApp
-//     name  → WhatsApp
-//     appId → 5319275A.WhatsAppDesktop_cv1g1gvanyjgm!App
-
-// For VS Code:
-
-// InstalledApp
-//     name  → Visual Studio Code
-//     appId → Microsoft.VisualStudioCode
-
-// We're deliberately keeping this class simple for now.

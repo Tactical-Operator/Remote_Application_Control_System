@@ -8,33 +8,51 @@ import com.remotepulse.server.service.TileUpdateService;
 
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST controller for saving custom tile icons.
+ *
+ * Receives custom icon data, delegates image processing and
+ * storage to CustomIconService, and notifies connected clients
+ * when the tile configuration changes.
+ */
 @RestController
 @RequestMapping("/api/custom-icon")
 public class CustomIconController {
 
-        private final CustomIconService customIconService;
-        private final TileUpdateService tileUpdateService;
+    private final CustomIconService customIconService;
+    private final TileUpdateService tileUpdateService;
 
-        public CustomIconController(
-                        CustomIconService customIconService, TileUpdateService tileUpdateService) {
-                this.customIconService = customIconService;
-                this.tileUpdateService = tileUpdateService;
-        }
+    /**
+     * Creates the controller with its required services.
+     *
+     * @param customIconService service for saving custom tile icons
+     * @param tileUpdateService service for notifying connected clients
+     */
+    public CustomIconController(
+            CustomIconService customIconService,
+            TileUpdateService tileUpdateService) {
 
-        @PostMapping("/save")
-        public Tile saveCustomIcon(
-                        @RequestBody CustomIconRequest request) {
+        this.customIconService = customIconService;
+        this.tileUpdateService = tileUpdateService;
+    }
 
-                Tile savedTile = customIconService.saveCustomIcon(
-                                request.getSlotNumber(),
-                                request.getImageBase64());
+    /**
+     * Saves a custom icon for the specified tile slot.
+     *
+     * @param request contains the tile slot number and Base64-encoded image
+     * @return the updated tile configuration
+     */
+    @PostMapping("/save")
+    public Tile saveCustomIcon(@RequestBody CustomIconRequest request) {
 
-                /*
-                 * Tell Android that the
-                 * tile icon changed.
-                 */
-                tileUpdateService.tilesChanged();
+        // Save the custom icon through the service layer.
+        Tile savedTile = customIconService.saveCustomIcon(
+                request.getSlotNumber(),
+                request.getImageBase64());
 
-                return savedTile;
-        }
+        // Notify connected Android clients that the tile configuration changed.
+        tileUpdateService.tilesChanged();
+
+        return savedTile;
+    }
 }

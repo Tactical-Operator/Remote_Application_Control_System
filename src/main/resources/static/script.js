@@ -6,6 +6,49 @@
  */
 
 
+
+/*
+ * ============================================================
+ * Remote Pulse - Frontend Controller
+ * File: script.js
+ * ============================================================
+ *
+ * Responsibility:
+ * Manages the Remote Pulse Windows configuration interface.
+ *
+ * Main responsibilities:
+ * - Fetch server information and tile configurations.
+ * - Display tiles and open their configuration modals.
+ * - Configure installed applications, custom applications,
+ *   websites, and system buttons.
+ * - Upload and update custom tile icons.
+ * - Delete tile configurations.
+ * - Communicate with the Spring Boot REST API.
+ *
+ * Note:
+ * This file manages the configuration interface.
+ * Application launching is handled by the Android app,
+ * Spring Boot controllers, and backend services.
+ *
+ * Existing API routes, behavior, and timing are preserved.
+ * ============================================================
+ */
+
+// Section	Responsibility
+// Server Information	Fetch and display the server address
+// Tiles	Fetch, sort, and render tile configurations
+// Configuration Modal	Open and close the selected slot's settings
+// System Button	Save system-button configurations
+// Delete Configuration	Confirm and clear a tile's configuration
+// Installed Applications	Fetch, search, select, and save installed apps
+// Custom Icon Upload	Upload custom images to the backend
+// Change Icon	Replace only the icon for a slot
+// Custom Application	Save an EXE path and application name
+// Website	Validate, preview, and save website URLs
+// Event Listeners	Connect UI controls to their functions
+// Initial Page Load	Load server information and tile data
+
+
 /*
  * Stores the slot currently being configured.
  */
@@ -140,7 +183,7 @@ async function loadTiles() {
 
 
 /*
- * Display all 15 tiles.
+ * Display all 18 tiles.
  */
 function displayTiles(tiles) {
 
@@ -161,7 +204,7 @@ function displayTiles(tiles) {
      * 2
      * 3
      * ...
-     * 15
+     * 18
      */
     tiles.sort(
         (a, b) =>
@@ -2530,6 +2573,6 @@ loadServerInfo();
 
 
 /*
- * Load all 15 Remote Pulse tiles.
+ * Load all 18 Remote Pulse tiles.
  */
 loadTiles();

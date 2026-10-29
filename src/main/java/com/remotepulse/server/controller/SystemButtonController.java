@@ -1,3 +1,4 @@
+
 package com.remotepulse.server.controller;
 
 import com.remotepulse.server.entity.Tile;
@@ -8,6 +9,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * REST controller for configuring system-button tiles.
+ *
+ * Receives the selected tile slot and system action,
+ * delegates the save operation to the service layer,
+ * and notifies connected Android clients of the change.
+ */
 @RestController
 @RequestMapping("/api/system-button")
 public class SystemButtonController {
@@ -15,29 +23,44 @@ public class SystemButtonController {
     private final SystemButtonSaveService systemButtonSaveService;
     private final TileUpdateService tileUpdateService;
 
+    /**
+     * Creates the controller with its required services.
+     *
+     * @param systemButtonSaveService service for saving system-button
+     *                                configurations
+     * @param tileUpdateService       service for notifying connected clients
+     */
     public SystemButtonController(
-            SystemButtonSaveService systemButtonSaveService, TileUpdateService tileUpdateService) {
+            SystemButtonSaveService systemButtonSaveService,
+            TileUpdateService tileUpdateService) {
+
         this.systemButtonSaveService = systemButtonSaveService;
         this.tileUpdateService = tileUpdateService;
     }
 
+    /**
+     * Saves a system-button configuration for the specified tile slot.
+     *
+     * @param request contains the slot number and system action
+     * @return the saved tile configuration
+     */
     @PostMapping("/save")
     public Tile saveSystemButton(
             @RequestBody Map<String, Object> request) {
 
+        // Extract and convert the tile slot number from the request.
         Integer slotNumber = Integer.valueOf(
                 request.get("slotNumber").toString());
 
+        // Extract the selected system action.
         String action = request.get("action").toString();
 
+        // Save the system-button configuration through the service layer. 
         Tile savedTile = systemButtonSaveService.saveSystemButton(
                 slotNumber,
                 action);
 
-        /*
-         * Tell Android that the
-         * tile configuration changed.
-         */
+        // Notify connected Android clients that the tile configuration changed.
         tileUpdateService.tilesChanged();
 
         return savedTile;
